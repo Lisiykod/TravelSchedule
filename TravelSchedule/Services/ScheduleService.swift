@@ -1,5 +1,5 @@
 //
-//  CopyrightService.swift
+//  ScheduleService.swift
 //  TravelSchedule
 //
 //  Created by Olga Trofimova on 10.02.2025.
@@ -8,13 +8,13 @@
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-typealias Copyright = Components.Schemas.CopyrightInfo
+typealias ScheduleInfo = Components.Schemas.ScheduleInfo
 
-protocol CopyrightServiceProtocol {
-    func getCopyrigth() async throws -> Copyright
+protocol ScheduleServiceProtocol {
+    func getSchedule(station name: String) async throws -> ScheduleInfo
 }
 
-final class CopyrightService: CopyrightServiceProtocol {
+final class ScheduleService: ScheduleServiceProtocol {
     private let client: Client
     private let apiKey: String
     
@@ -23,15 +23,14 @@ final class CopyrightService: CopyrightServiceProtocol {
         self.apiKey = apiKey
     }
     
-    func getCopyrigth() async throws -> Copyright {
-        let response = try await client.getCopyright(
+    func getSchedule(station name: String) async throws -> ScheduleInfo {
+        let response = try await client.getSchedule(
             query: .init(
                 apikey: apiKey,
-                format: "json"
+                station: name
             )
         )
         
         return try response.ok.body.json
     }
-    
 }

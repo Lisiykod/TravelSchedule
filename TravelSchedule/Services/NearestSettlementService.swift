@@ -24,12 +24,12 @@ final class NearestSettlementService: NearestSettlementServiceProtocol {
     }
     
     func getNearestSettlement(lat: Double, lng: Double) async throws -> NearestSettlement {
-        let responce = try await client.getNearestSettlement(
+        let response = try await client.getNearestSettlement(
             query: .init(
                 apikey: apiKey,
                 lat: lat,
                 lng: lng)
         )
-        return try responce.ok.body.json 
+        return try response.ok.body.json 
     }
 }

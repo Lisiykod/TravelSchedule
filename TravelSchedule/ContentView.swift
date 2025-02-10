@@ -16,6 +16,9 @@ struct ContentView: View {
 //                settlements()
 //                carrier() 
 //                copyright()
+//                thread()
+//                schedule()
+                search()
             }
             .buttonStyle(.bordered)
         }
@@ -88,6 +91,7 @@ struct ContentView: View {
         }
     }
     
+    
     func copyright() {
         let client = Client(
             serverURL: try! Servers.Server1.url(),
@@ -109,6 +113,68 @@ struct ContentView: View {
         }
     }
     
+    func thread() {
+        let client = Client(
+            serverURL: try! Servers.Server1.url(),
+            transport: URLSessionTransport()
+        )
+        
+        let service = ThreadService(
+            client: client,
+            apiKey: Constants.apiKey
+        )
+        
+        Task {
+            do {
+                let thread = try await service.getThread(uid: "UJ-615_250211_c1764_12")
+                print("thread: \(thread)")
+            } catch {
+                print("error responce: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func schedule() {
+        let client = Client(
+            serverURL: try! Servers.Server1.url(),
+            transport: URLSessionTransport()
+        )
+        
+        let service = ScheduleService(
+            client: client,
+            apiKey: Constants.apiKey
+        )
+        
+        Task {
+            do {
+                let schedule = try await service.getSchedule(station: "s9600213")
+                print("schedule: \(schedule)")
+            } catch {
+                print("error responce: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func search() {
+        let client = Client(
+            serverURL: try! Servers.Server1.url(),
+            transport: URLSessionTransport()
+        )
+        
+        let service = SearchService(
+            client: client,
+            apiKey: Constants.apiKey
+        )
+        
+        Task {
+            do {
+                let search = try await service.getSearchResult(from: "c146", to: "c213", on: "2025-02-12")
+                print("search: \(search)")
+            } catch {
+                print("error responce: \(error.localizedDescription)")
+            }
+        }
+    }
     
 }
 
