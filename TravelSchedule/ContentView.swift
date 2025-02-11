@@ -9,27 +9,27 @@ import SwiftUI
 import OpenAPIURLSession
 
 struct ContentView: View {
+    
     var body: some View {
         VStack {
-            Button("get responce") {
-//                stations()
+            Button("print selected response") {
+                stations()
 //                settlements()
 //                carrier() 
 //                copyright()
 //                thread()
 //                schedule()
-                search()
+//                search()
+//                stationsList()
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
     
     func stations() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = NearestStationsService(
             client: client,
@@ -47,10 +47,8 @@ struct ContentView: View {
     }
     
     func settlements() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = NearestSettlementService(
             client: client,
@@ -71,10 +69,8 @@ struct ContentView: View {
     }
     
     func carrier() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = CarrierInfoService(
             client: client,
@@ -93,10 +89,8 @@ struct ContentView: View {
     
     
     func copyright() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = CopyrightService(
             client: client,
@@ -114,10 +108,8 @@ struct ContentView: View {
     }
     
     func thread() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = ThreadService(
             client: client,
@@ -135,10 +127,8 @@ struct ContentView: View {
     }
     
     func schedule() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = ScheduleService(
             client: client,
@@ -156,10 +146,8 @@ struct ContentView: View {
     }
     
     func search() {
-        let client = Client(
-            serverURL: try! Servers.Server1.url(),
-            transport: URLSessionTransport()
-        )
+        let client = client()
+        guard let client else { return }
         
         let service = SearchService(
             client: client,
@@ -174,6 +162,46 @@ struct ContentView: View {
                 print("error responce: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func stationsList() {
+        let client = client()
+        guard let client else { return }
+        
+        let service = StationsListService(
+            client: client,
+            apiKey: Constants.apiKey
+        )
+        
+        Task {
+            do {
+                let stationsList = try await service.getStationsList()
+                print("stationsList: \(stationsList)")
+            } catch {
+                print("error responce: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func client() -> Client? {
+        var url: URL?
+        
+        do {
+          url = try Servers.Server1.url()
+        } catch {
+            print(String(describing: error))
+        }
+        
+        guard let url else {
+            return nil
+        }
+        
+        let client = Client(
+            serverURL: url,
+            transport: URLSessionTransport()
+        )
+        
+        return client
     }
     
 }
