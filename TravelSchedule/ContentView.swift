@@ -12,23 +12,45 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Button("print selected response") {
-                stations()
-//                settlements()
-//                carrier() 
-//                copyright()
-//                thread()
-//                schedule()
-//                search()
-//                stationsList()
+            Button("print stations") {
+                getStations()
             }
-            .buttonStyle(.borderedProminent)
+            
+            Button("print settlements") {
+                getSettlements()
+            }
+            
+            Button("print carrier") {
+                getCarrier()
+            }
+            
+            Button("print copyright") {
+                getCopyright()
+            }
+            
+            Button("print thread") {
+                getThread()
+            }
+            
+            Button("print schedule") {
+                getSchedule()
+            }
+            
+            Button("print search") {
+                getSearch()
+            }
+            
+            Button("print stationsList") {
+                getStationsList()
+            }
         }
+        .buttonStyle(.borderedProminent)
         .padding()
     }
     
-    func stations() {
-        let client = client()
+    
+    private func getStations() {
+        let client = createClient()
         guard let client else { return }
         
         let service = NearestStationsService(
@@ -41,13 +63,13 @@ struct ContentView: View {
                 let stations = try await service.getNearestStations(lat: 59.864177, lng: 30.319163, distance: 50)
                 print("nearest stations: \(stations)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    func settlements() {
-        let client = client()
+    private func getSettlements() {
+        let client = createClient()
         guard let client else { return }
         
         let service = NearestSettlementService(
@@ -63,13 +85,13 @@ struct ContentView: View {
                 )
                 print("settlements: \(settlements)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    func carrier() {
-        let client = client()
+    private func getCarrier() {
+        let client = createClient()
         guard let client else { return }
         
         let service = CarrierInfoService(
@@ -82,14 +104,14 @@ struct ContentView: View {
                 let carrier = try await service.getCarrierInfo(code: "680")
                 print("carrier: \(carrier)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
     
-    func copyright() {
-        let client = client()
+    private func getCopyright() {
+        let client = createClient()
         guard let client else { return }
         
         let service = CopyrightService(
@@ -102,13 +124,13 @@ struct ContentView: View {
                 let copyright = try await service.getCopyrigth()
                 print("copyright: \(copyright)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    func thread() {
-        let client = client()
+    private func getThread() {
+        let client = createClient()
         guard let client else { return }
         
         let service = ThreadService(
@@ -121,13 +143,13 @@ struct ContentView: View {
                 let thread = try await service.getThread(uid: "UJ-615_250211_c1764_12")
                 print("thread: \(thread)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    func schedule() {
-        let client = client()
+    private func getSchedule() {
+        let client = createClient()
         guard let client else { return }
         
         let service = ScheduleService(
@@ -140,13 +162,13 @@ struct ContentView: View {
                 let schedule = try await service.getSchedule(station: "s9600213")
                 print("schedule: \(schedule)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    func search() {
-        let client = client()
+    private func getSearch() {
+        let client = createClient()
         guard let client else { return }
         
         let service = SearchService(
@@ -159,13 +181,13 @@ struct ContentView: View {
                 let search = try await service.getSearchResult(from: "c146", to: "c213", on: "2025-02-12")
                 print("search: \(search)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    func stationsList() {
-        let client = client()
+    private func getStationsList() {
+        let client = createClient()
         guard let client else { return }
         
         let service = StationsListService(
@@ -178,16 +200,16 @@ struct ContentView: View {
                 let stationsList = try await service.getStationsList()
                 print("stationsList: \(stationsList)")
             } catch {
-                print("error responce: \(error.localizedDescription)")
+                print("error response: \(error.localizedDescription)")
             }
         }
     }
     
-    private func client() -> Client? {
+    private func createClient() -> Client? {
         var url: URL?
         
         do {
-          url = try Servers.Server1.url()
+            url = try Servers.Server1.url()
         } catch {
             print(String(describing: error))
         }
