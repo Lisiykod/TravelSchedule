@@ -9,10 +9,7 @@ import SwiftUI
 
 struct ScheduleView: View {
     
-    @State private var path: [String] = []
-
     var body: some View {
-        NavigationStack {
             VStack(spacing: 16) {
                 ZStack {
                     Color.ypBlue
@@ -73,7 +70,6 @@ struct ScheduleView: View {
         //        }
         //        .cornerRadius(20)
         //        .background()
-    }
 }
 
 #Preview {
