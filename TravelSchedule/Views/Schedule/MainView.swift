@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MainView.swift
 //  TravelSchedule
 //
 //  Created by Olga Trofimova on 07.02.2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct MainView: View {
     
     @State private var path: [String] = []
     
@@ -15,7 +15,7 @@ struct ContentView: View {
         
         NavigationStack(path: $path) {
             TabView {
-                ScheduleView()
+                ScheduleView(path: $path)
                     .tabItem {
                         Image("arrowUpIcon")
                             .renderingMode(.template)
@@ -31,6 +31,10 @@ struct ContentView: View {
                 switch destinationID {
                 case NavigationConstants.userAgreementView.rawValue:
                     UserAgreementView()
+                case NavigationConstants.selectCityView.rawValue:
+                    SelectCityView(path: $path)
+                case NavigationConstants.selectStationView.rawValue:
+                    SelectStationView(path: $path)
                 default:
                     UserAgreementView()
                 }
@@ -43,5 +47,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MainView()
+        .environmentObject(ScheduleViewModel())
 }

@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct TravelScheduleApp: App {
+    
+    @State private var viewModel = ScheduleViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+                .environmentObject(viewModel)
         }
     }
 }

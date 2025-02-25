@@ -8,9 +8,57 @@
 import Foundation
 import OpenAPIURLSession
 
-final class ScheduleViewModel {
+typealias Settlements = Components.Schemas.SettlementsFromStationsList
+typealias Stations = Components.Schemas.StationsFromStationsList
+
+final class ScheduleViewModel: ObservableObject {
     
+    @Published var allSettlements: [Settlements] = []
+    @Published var stations: [Stations] = []
     
+    init() {
+        //        Task {
+        //            await getAllSettlements()
+        //        }
+        // MARK: - для тестирования верстки
+        allSettlements = [Settlements(title: "Москва"), Settlements(title: "Санкт-Петербург"), Settlements(title: "Новосибирск")]
+    }
+    
+    @MainActor
+    private func getAllSettlements() async {
+        var stationList: [Components.Schemas.SettlementsFromStationsList] = []
+        //        Task {
+        do {
+            let allStationsList = try await getStationsList()
+            for country in allStationsList.countries ?? [] {
+                for region in country.regions ?? [] {
+                    if region.title == "Россия" {
+                        for city in region.settlements ?? [] {
+                            if stationList.count < 10 && city.title != "" {
+                                stationList.append(city)
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        } catch {
+            print(error)
+        }
+        //        }
+        
+        allSettlements = stationList
+        print("stationList \(stationList)")
+    }
+    
+    func setSettlementsStations(on settlement: Settlements) {
+        let allStations = settlement.stations ?? []
+        stations = allStations.filter { $0.station_type == "train_station" || $0.transport_type == "train" }
+    }
+    
+    // добавить выбор направления
+    // расписание рейсов
+    // информацию о перевозчике
     
     private func getStations() {
         let client = createClient()
@@ -149,23 +197,37 @@ final class ScheduleViewModel {
         }
     }
     
-    private func getStationsList() {
+    //    private func getStationsList()  {
+    //        let client = createClient()
+    //        guard let client else { return }
+    //
+    //        let service = StationsListService(
+    //            client: client,
+    //            apiKey: Constants.apiKey
+    //        )
+    //
+    //        Task {
+    //            do {
+    //                let stationsList = try await service.getStationsList()
+    //                print("stationsList: \(stationsList)")
+    //            } catch {
+    //                print("error response: \(error.localizedDescription)")
+    //            }
+    //
+    //        }
+    //
+    //    }
+    
+    private func getStationsList() async throws -> StationsList {
         let client = createClient()
-        guard let client else { return }
+        guard let client else { return StationsList() }
         
         let service = StationsListService(
             client: client,
             apiKey: Constants.apiKey
         )
-        
-        Task {
-            do {
-                let stationsList = try await service.getStationsList()
-                print("stationsList: \(stationsList)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
+        let stationsList = try await service.getStationsList()
+        return stationsList
     }
     
     private func createClient() -> Client? {

@@ -26,7 +26,6 @@ struct SettingsView: View {
                     .background()
                     .frame(height: 60)
                     .onTapGesture {
-                        print("tap")
                         path.append("UserAgreementView")
                     }
                 

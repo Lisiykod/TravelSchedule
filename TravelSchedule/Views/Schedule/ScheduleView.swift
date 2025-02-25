@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ScheduleView: View {
     
+    @Binding var path: [String]
+    
     var body: some View {
             VStack(spacing: 16) {
                 ZStack {
@@ -16,6 +18,9 @@ struct ScheduleView: View {
                     HStack(spacing: 16) {
                         VStack(alignment: .leading) {
                             SelectDestinationView(text: nil, placeholder: "Откуда")
+                                .onTapGesture {
+                                    path.append("SelectCityView")
+                                }
                             SelectDestinationView(text: nil, placeholder: "Куда")
                         }
                         .frame(height: 96)
@@ -54,24 +59,8 @@ struct ScheduleView: View {
                 
             } // VStack
         }
-        //        ZStack {
-        //            NavigationLink {
-        //                SelectCityView()
-        //            } label: {
-        //                Text("Выбор города")
-        //            }
-        //            .navigationDestination(for: String.self) { destinationIdentifier in
-        //                  if destinationIdentifier == "DetailView" {
-        //                      Text("Это детальное представление")
-        //                  }
-        //              }
-        //            Text("")
-        //
-        //        }
-        //        .cornerRadius(20)
-        //        .background()
 }
 
 #Preview {
-    ScheduleView()
+    ScheduleView(path: .constant([""]))
 }

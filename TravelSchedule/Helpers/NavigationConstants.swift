@@ -9,4 +9,6 @@ import Foundation
 
 enum NavigationConstants: String {
     case userAgreementView = "UserAgreementView"
+    case selectCityView = "SelectCityView"
+    case selectStationView = "SelectStationView"
 }
