@@ -8,22 +8,46 @@
 import SwiftUI
 
 struct CarriersView: View {
+    
+    @EnvironmentObject private var viewModel: ScheduleViewModel
+    @Binding var path: [String]
+    
     var body: some View {
         VStack(spacing: 16) {
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-                .font(.system(size: 24, weight: .bold))
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    CarrierCardView(imageName: "mockIcon", hasTransfer: true, carrierName: "РЖД", transferString: "true", date: "24 января", beginTime: "11:40", endTime: "20:10", travelTime: "9")
-                        .frame(height: 104)
-                        .padding(16)
-                }
+            Group {
+                Text("\(viewModel.fromSettlemet?.title ?? "")" + " (\(viewModel.fromStation?.title ?? "")) ") +
+                Text(" -> ") +
+                Text("\(viewModel.toSettlemet?.title ?? "")" + " (\(viewModel.toStation?.title ?? "")) ")
             }
+            .font(.system(size: 24, weight: .bold))
+            
+            if viewModel.carriersList.isEmpty {
+                Spacer()
+                NotFoundView(filter: true)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        ForEach(viewModel.carriersList, id: \.self) { segment in
+                            CarrierCardView(segmentInfo: segment)
+                                .frame(height: 104)
+                                .padding(16)
+                                .onTapGesture {
+                                    viewModel.carrier = segment.thread?.carrier
+                                    path.append(NavigationConstants.selectCarrierInfoView.rawValue)
+                                }
+                        }
+                    }
+                }
+                .toolbarRole(.editor)
+            }
+            
             Spacer()
         }
+        .padding(16)
     }
 }
 
 #Preview {
-    CarriersView()
+    CarriersView(path: .constant([""]))
+        .environmentObject(ScheduleViewModel())
 }

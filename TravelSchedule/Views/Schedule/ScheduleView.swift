@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ScheduleView: View {
     
+    @EnvironmentObject private var viewModel: ScheduleViewModel
     @Binding var path: [String]
     
     var body: some View {
@@ -16,12 +17,21 @@ struct ScheduleView: View {
                 ZStack {
                     Color.ypBlue
                     HStack(spacing: 16) {
-                        VStack(alignment: .leading) {
-                            SelectDestinationView(text: nil, placeholder: "Откуда")
+                        VStack(alignment: .leading) { 
+                            SelectDestinationView(
+                                text:"\(viewModel.fromSettlemet?.title ?? "") (\(viewModel.fromStation?.title ?? ""))",
+                                placeholder: "Откуда"
+                            )
                                 .onTapGesture {
-                                    path.append("SelectCityView")
+                                    path.append(NavigationConstants.selectFromCityView.rawValue)
                                 }
-                            SelectDestinationView(text: nil, placeholder: "Куда")
+                            SelectDestinationView(
+                                text:"\(viewModel.toSettlemet?.title ?? "") (\(viewModel.toStation?.title ?? ""))",
+                                placeholder: "Куда"
+                            )
+                            .onTapGesture {
+                                path.append(NavigationConstants.selectToCityView.rawValue)
+                            }
                         }
                         .frame(height: 96)
                         .font(.system(size: 17, weight: .regular))
@@ -31,7 +41,7 @@ struct ScheduleView: View {
                         )
                         
                         Button {
-                            
+                            viewModel.changeDirection()
                         } label: {
                             Image("change")
                                 .frame(width: 36, height: 36)
@@ -47,7 +57,8 @@ struct ScheduleView: View {
                 .frame(height: 128)
                 
                 Button {
-                    
+                    viewModel.search()
+                    path.append(NavigationConstants.carriersView.rawValue)
                 } label: {
                     Text("Найти")
                         .font(.system(size: 17, weight: .bold))
@@ -63,4 +74,5 @@ struct ScheduleView: View {
 
 #Preview {
     ScheduleView(path: .constant([""]))
+        .environmentObject(ScheduleViewModel())
 }

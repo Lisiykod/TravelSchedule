@@ -767,6 +767,8 @@ components:
           type: string
         to:
           $ref: '#/components/schemas/SegmentsFromTo'
+        transfers:
+          type: string
         has_transfers:
           type: boolean
         duration:

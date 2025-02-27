@@ -31,12 +31,22 @@ struct MainView: View {
                 switch destinationID {
                 case NavigationConstants.userAgreementView.rawValue:
                     UserAgreementView()
-                case NavigationConstants.selectCityView.rawValue:
-                    SelectCityView(path: $path)
-                case NavigationConstants.selectStationView.rawValue:
-                    SelectStationView(path: $path)
+                case NavigationConstants.selectFromCityView.rawValue:
+                    SelectCityView(direction: .from, path: $path)
+                case NavigationConstants.selectFromStationView.rawValue:
+                    SelectStationView(direction: .from, path: $path)
+                case NavigationConstants.selectToCityView.rawValue:
+                    SelectCityView(direction: .to, path: $path)
+                case NavigationConstants.selectToStationView.rawValue:
+                    SelectStationView(direction: .to, path: $path)
+                case NavigationConstants.carriersView.rawValue:
+                    CarriersView(path: $path)
+                case NavigationConstants.noInternetView.rawValue:
+                    ErrorsView(error: .internetConnectError)
+                case NavigationConstants.serverErrorView.rawValue:
+                    ErrorsView(error: .serverError)
                 default:
-                    UserAgreementView()
+                    ErrorsView(error: .internetConnectError)
                 }
             }
         }

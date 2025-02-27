@@ -10,55 +10,121 @@ import OpenAPIURLSession
 
 typealias Settlements = Components.Schemas.SettlementsFromStationsList
 typealias Stations = Components.Schemas.StationsFromStationsList
+typealias Segments = Components.Schemas.Segments
+typealias Carrier = Components.Schemas.Carrier
+
+enum Direction {
+    case from
+    case to
+}
+
+enum ErrorsType: Error {
+    case serverError
+    case internetConnectError
+}
 
 final class ScheduleViewModel: ObservableObject {
     
     @Published var allSettlements: [Settlements] = []
     @Published var stations: [Stations] = []
+    @Published var fromSettlemet: Settlements?
+    @Published var toSettlemet: Settlements?
+    @Published var fromStation: Stations?
+    @Published var toStation: Stations?
+    @Published var carriersList: [Segments] = []
+    @Published var carrier: Carrier?
     
     init() {
-        //        Task {
-        //            await getAllSettlements()
-        //        }
+        Task {
+            await getAllSettlements()
+        }
         // MARK: - для тестирования верстки
-        allSettlements = [Settlements(title: "Москва"), Settlements(title: "Санкт-Петербург"), Settlements(title: "Новосибирск")]
+        //        allSettlements = [Settlements(title: "Москва"), Settlements(title: "Санкт-Петербург"), Settlements(title: "Новосибирск")]
     }
     
     @MainActor
     private func getAllSettlements() async {
-        var stationList: [Components.Schemas.SettlementsFromStationsList] = []
-        //        Task {
+        var stationList: [Settlements] = []
+        let testSettlements = ["Москва", "Санкт-Петербург", "Сочи", "Горный Воздух", "Краснодар", "Казань", "Омск"]
         do {
             let allStationsList = try await getStationsList()
             for country in allStationsList.countries ?? [] {
                 for region in country.regions ?? [] {
-                    if region.title == "Россия" {
-                        for city in region.settlements ?? [] {
-                            if stationList.count < 10 && city.title != "" {
-                                stationList.append(city)
-                            }
+                    for city in region.settlements ?? [] {
+                        if testSettlements.contains(city.title ?? "") {
+                            stationList.append(city)
                         }
-                        
                     }
                 }
             }
+        } catch ErrorsType.internetConnectError {
+            print("no internet")
+        } catch ErrorsType.serverError {
+            print("server error")
         } catch {
-            print(error)
+            
         }
-        //        }
         
-        allSettlements = stationList
+        allSettlements = stationList.filter { $0.title != ""}
+        allSettlements.sort {$0.title! < $1.title! }
         print("stationList \(stationList)")
     }
     
-    func setSettlementsStations(on settlement: Settlements) {
+    func setSettlementsStations(on settlement: Settlements, direction: Direction) {
         let allStations = settlement.stations ?? []
         stations = allStations.filter { $0.station_type == "train_station" || $0.transport_type == "train" }
+        stations.sort {$0.title! < $1.title! }
+        
+        switch direction {
+        case .from:
+            fromSettlemet = settlement
+        case .to:
+            toSettlemet = settlement
+        }
     }
     
-    // добавить выбор направления
-    // расписание рейсов
-    // информацию о перевозчике
+    func setStation(station: Stations, direction: Direction) {
+        switch direction {
+        case .from:
+            fromStation = station
+        case .to:
+            toStation = station
+        }
+    }
+    
+    func changeDirection() {
+        swap(&fromSettlemet, &toSettlemet)
+        swap(&fromStation, &toStation)
+    }
+    
+    @MainActor
+    func search() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYY-MM-DD"
+        let date = dateFormatter.string(from: Date())
+        
+        Task {
+            do {
+                let searchResult = try await getSearch(date: date)
+                carriersList = searchResult?.segments ?? []
+            } catch {
+                print("error \(error)")
+                throw ErrorsType.serverError
+            }
+        }
+    }
+    
+    func dateFormatter(from date: String, with format: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        dateFormatter.locale = Locale.current
+        let dateFromString = dateFormatter.date(from: date)
+        return dateFormatter.string(from: dateFromString ?? Date())
+    }
+    
+    
+    
+    // MARK: - Services
     
     private func getStations() {
         let client = createClient()
@@ -178,23 +244,39 @@ final class ScheduleViewModel: ObservableObject {
         }
     }
     
-    private func getSearch() {
+    //    private func getSearch() {
+    //        let client = createClient()
+    //        guard let client else { return }
+    //
+    //        let service = SearchService(
+    //            client: client,
+    //            apiKey: Constants.apiKey
+    //        )
+    //
+    //        Task {
+    //            do {
+    //                let search = try await service.getSearchResult(from: "c146", to: "c213", on: "2025-02-12")
+    //                print("search: \(search)")
+    //            } catch {
+    //                print("error response: \(error.localizedDescription)")
+    //            }
+    //        }
+    //    }
+    
+    private func getSearch(date: String? = nil) async throws -> SearchResult? {
         let client = createClient()
-        guard let client else { return }
+        guard let client else { return nil }
         
         let service = SearchService(
             client: client,
             apiKey: Constants.apiKey
         )
+        guard let fromCode = fromStation?.codes?.yandex_code,
+              let toCode = toStation?.codes?.yandex_code else { return nil }
         
-        Task {
-            do {
-                let search = try await service.getSearchResult(from: "c146", to: "c213", on: "2025-02-12")
-                print("search: \(search)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
+        let search = try await service.getSearchResult(from: fromCode, to: toCode, on: date)
+        print(search)
+        return search
     }
     
     //    private func getStationsList()  {

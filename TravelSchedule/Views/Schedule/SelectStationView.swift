@@ -12,6 +12,12 @@ struct SelectStationView: View {
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @State private var searchString: String = ""
     @Binding var path: [String]
+    private var direction: Direction
+    
+    init(direction: Direction, path: Binding<[String]>) {
+        self.direction = direction
+        self._path = path
+    }
     
     var searchResults: [Stations] {
         if searchString.isEmpty {
@@ -32,6 +38,8 @@ struct SelectStationView: View {
                         ListRowView(settlement: station.title ?? "")
                         .background()
                         .onTapGesture {
+                            viewModel.setStation(station: station, direction: direction)
+                            viewModel.search()
                             path = []
                         }
                     }
@@ -46,6 +54,6 @@ struct SelectStationView: View {
 }
 
 #Preview {
-    SelectStationView(path: .constant([""]))
+    SelectStationView(direction: .from, path: .constant([""]))
         .environmentObject(ScheduleViewModel())
 }

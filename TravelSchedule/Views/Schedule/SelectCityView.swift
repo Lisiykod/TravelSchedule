@@ -12,6 +12,12 @@ struct SelectCityView: View {
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @State private var searchString: String = ""
     @Binding var path: [String]
+    private var direction: Direction
+    
+    init(direction: Direction, path: Binding<[String]>) {
+        self.direction = direction
+        self._path = path
+    }
     
     var searchResults: [Settlements] {
         if searchString.isEmpty {
@@ -25,16 +31,22 @@ struct SelectCityView: View {
     
     var body: some View {
         VStack {
+            ProgressView()
             SearchBar(searchText: $searchString)
             ScrollView {
                 LazyVStack(alignment: .leading) {
                     ForEach(viewModel.allSettlements, id: \.self) { settlement in
                         ListRowView(settlement: settlement.title ?? "")
-                        .background()
-                        .onTapGesture {
-                            path.append("SelectStationView")
-                            viewModel.setSettlementsStations(on: settlement)
-                        }
+                            .background()
+                            .onTapGesture {
+                                switch direction {
+                                case .from:
+                                    path.append(NavigationConstants.selectFromStationView.rawValue)
+                                case .to:
+                                    path.append(NavigationConstants.selectToStationView.rawValue)
+                                }
+                                viewModel.setSettlementsStations(on: settlement, direction: direction)
+                            }
                     }
                 }
                 .padding([.leading,. trailing], 16)
@@ -46,7 +58,8 @@ struct SelectCityView: View {
     }
 }
 
+
 #Preview {
-    SelectCityView(path: .constant([""]))
+    SelectCityView(direction: .from, path: .constant([""]))
         .environmentObject(ScheduleViewModel())
 }
