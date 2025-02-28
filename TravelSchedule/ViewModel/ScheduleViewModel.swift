@@ -33,13 +33,14 @@ final class ScheduleViewModel: ObservableObject {
     @Published var toStation: Stations?
     @Published var carriersList: [Segments] = []
     @Published var carrier: Carrier?
+    @Published var isLoading: Bool = true
+    
+    private let navigationService = NavigationService.shared
     
     init() {
         Task {
             await getAllSettlements()
         }
-        // MARK: - для тестирования верстки
-        //        allSettlements = [Settlements(title: "Москва"), Settlements(title: "Санкт-Петербург"), Settlements(title: "Новосибирск")]
     }
     
     @MainActor
@@ -58,16 +59,16 @@ final class ScheduleViewModel: ObservableObject {
                 }
             }
         } catch ErrorsType.internetConnectError {
-            print("no internet")
+            addPath(with: Route.noInternetView)
         } catch ErrorsType.serverError {
-            print("server error")
+            addPath(with: Route.serverErrorView)
         } catch {
-            
+            print(error.localizedDescription)
         }
         
         allSettlements = stationList.filter { $0.title != ""}
+        isLoading = allSettlements.isEmpty ? true : false
         allSettlements.sort {$0.title! < $1.title! }
-        print("stationList \(stationList)")
     }
     
     func setSettlementsStations(on settlement: Settlements, direction: Direction) {
@@ -98,20 +99,33 @@ final class ScheduleViewModel: ObservableObject {
     }
     
     @MainActor
-    func search() {
+    func search() async {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "YYYY-MM-DD"
+        dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = dateFormatter.string(from: Date())
         
-        Task {
-            do {
-                let searchResult = try await getSearch(date: date)
-                carriersList = searchResult?.segments ?? []
-            } catch {
-                print("error \(error)")
-                throw ErrorsType.serverError
-            }
+        let client = createClient()
+        guard let client else { return }
+        
+        let service = SearchService(
+            client: client,
+            apiKey: Constants.apiKey
+        )
+        guard let fromCode = fromStation?.codes?.yandex_code,
+              let toCode = toStation?.codes?.yandex_code else { return }
+        
+        do {
+            let searchResult = try await service.getSearchResult(from: fromCode, to: toCode, on: date, transportType: "train", transfers: true)
+            carriersList = searchResult.segments ?? []
+        } catch ErrorsType.internetConnectError {
+            addPath(with: Route.noInternetView)
+        } catch ErrorsType.serverError {
+            addPath(with: Route.serverErrorView)
+        } catch {
+            print(String(describing: error))
         }
+        
+        isLoading = false
     }
     
     func dateFormatter(from date: String, with format: String) -> String {
@@ -122,90 +136,15 @@ final class ScheduleViewModel: ObservableObject {
         return dateFormatter.string(from: dateFromString ?? Date())
     }
     
+    func addPath(with route: Route) {
+        navigationService.push(route: route)
+    }
     
-    
+    func backToRoot() {
+        navigationService.popRoot()
+    }
     // MARK: - Services
-    
-    private func getStations() {
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = NearestStationsService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
-        Task {
-            do {
-                let stations = try await service.getNearestStations(lat: 59.864177, lng: 30.319163, distance: 50)
-                print("nearest stations: \(stations)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    private func getSettlements() {
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = NearestSettlementService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
-        Task {
-            do {
-                let settlements = try await service.getNearestSettlement(
-                    lat: 54.513678,
-                    lng: 36.261341
-                )
-                print("settlements: \(settlements)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    private func getCarrier() {
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = CarrierInfoService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
-        Task {
-            do {
-                let carrier = try await service.getCarrierInfo(code: "680")
-                print("carrier: \(carrier)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    
-    private func getCopyright() {
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = CopyrightService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
-        Task {
-            do {
-                let copyright = try await service.getCopyrigth()
-                print("copyright: \(copyright)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
-    }
-    
+
     private func getThread() {
         let client = createClient()
         guard let client else { return }
@@ -244,61 +183,29 @@ final class ScheduleViewModel: ObservableObject {
         }
     }
     
-    //    private func getSearch() {
-    //        let client = createClient()
-    //        guard let client else { return }
-    //
-    //        let service = SearchService(
-    //            client: client,
-    //            apiKey: Constants.apiKey
-    //        )
-    //
-    //        Task {
-    //            do {
-    //                let search = try await service.getSearchResult(from: "c146", to: "c213", on: "2025-02-12")
-    //                print("search: \(search)")
-    //            } catch {
-    //                print("error response: \(error.localizedDescription)")
-    //            }
-    //        }
-    //    }
-    
-    private func getSearch(date: String? = nil) async throws -> SearchResult? {
-        let client = createClient()
-        guard let client else { return nil }
-        
-        let service = SearchService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        guard let fromCode = fromStation?.codes?.yandex_code,
-              let toCode = toStation?.codes?.yandex_code else { return nil }
-        
-        let search = try await service.getSearchResult(from: fromCode, to: toCode, on: date)
-        print(search)
-        return search
-    }
-    
-    //    private func getStationsList()  {
-    //        let client = createClient()
-    //        guard let client else { return }
-    //
-    //        let service = StationsListService(
-    //            client: client,
-    //            apiKey: Constants.apiKey
-    //        )
-    //
-    //        Task {
-    //            do {
-    //                let stationsList = try await service.getStationsList()
-    //                print("stationsList: \(stationsList)")
-    //            } catch {
-    //                print("error response: \(error.localizedDescription)")
-    //            }
-    //
-    //        }
-    //
-    //    }
+//        private func getSearch(date: String? = nil, transportType: String, transfers: Bool) throws -> SearchResult? {
+//            let client = createClient()
+//            guard let client else { return nil }
+//    
+//            let service = SearchService(
+//                client: client,
+//                apiKey: Constants.apiKey
+//            )
+//            guard let fromCode = fromStation?.codes?.yandex_code,
+//                  let toCode = toStation?.codes?.yandex_code else { return nil }
+//    
+//            var search: SearchResult?
+//            Task {
+//                do {
+//                    search = try await service.getSearchResult(from: fromCode, to: toCode, on: date, transportType: transportType, transfers: transfers)
+//                    print("search \(String(describing: search))")
+//                } catch {
+//                    throw ErrorsType.serverError
+//                }
+//            }
+//            return search
+//        }
+//    
     
     private func getStationsList() async throws -> StationsList {
         let client = createClient()

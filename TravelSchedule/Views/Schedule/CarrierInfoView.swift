@@ -11,43 +11,53 @@ struct CarrierInfoView: View {
     @EnvironmentObject private var viewModel: ScheduleViewModel
     
     var body: some View {
-        VStack {
-            AsyncImage(url: URL(string: viewModel.carrier?.logo ?? "")) { phase in
-                switch phase {
-                case .failure:
-                    Image(systemName: "photo")
-                        .font(.largeTitle)
-                case .success(let image):
-                    image
-                        .resizable()
-                default:
-                    ProgressView()
-                }
-            }
-            .frame(width: 343, height: 104)
-            .clipShape(.rect(cornerRadius: 24))
-            
-            VStack {
-                Text(viewModel.carrier?.title ?? "")
-                    .font(.system(size: 24, weight: .bold))
-                VStack(spacing: 0) {
-                    Text("E-mail")
-                        .font(.system(size: 17, weight: .regular))
-                    Text(viewModel.carrier?.email ?? "")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(.ypBlueUniversal)
+        ZStack {
+            VStack(alignment: .leading) {
+                VStack(alignment: .center) {
+                    AsyncImage(url: URL(string: viewModel.carrier?.logo ?? "")) { phase in
+                        switch phase {
+                        case .failure:
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        default:
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                        }
+                    }
+                    .frame(width: 343, height: 104)
+                    .clipShape(.rect(cornerRadius: 24))
                 }
                 
-                VStack(spacing: 0) {
-                    Text("Телефон")
-                        .font(.system(size: 17, weight: .regular))
-                    Text(viewModel.carrier?.phone ?? "")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(.ypBlueUniversal)
+                
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(viewModel.carrier?.title ?? "информации нет")
+                        .font(.system(size: 24, weight: .bold))
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("E-mail")
+                            .font(.system(size: 17, weight: .regular))
+                        Text(viewModel.carrier?.email ?? "информации нет")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundStyle(.ypBlueUniversal)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Телефон")
+                            .font(.system(size: 17, weight: .regular))
+                        Text(viewModel.carrier?.phone ?? "информации нет")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundStyle(.ypBlueUniversal)
+                    }
                 }
+                Spacer()
+                    .toolbarRole(.editor)
+                    .navigationTitle("Информация о перевозчике")
             }
+            .padding(16)
         }
-        .padding(16)
     }
     
 }

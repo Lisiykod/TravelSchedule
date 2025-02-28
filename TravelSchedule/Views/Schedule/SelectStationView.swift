@@ -11,12 +11,10 @@ struct SelectStationView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @State private var searchString: String = ""
-    @Binding var path: [String]
     private var direction: Direction
     
-    init(direction: Direction, path: Binding<[String]>) {
+    init(direction: Direction) {
         self.direction = direction
-        self._path = path
     }
     
     var searchResults: [Stations] {
@@ -24,7 +22,7 @@ struct SelectStationView: View {
             return viewModel.stations
         } else {
             return viewModel.stations.filter {
-                $0.title?.contains(searchString.lowercased()) ?? false
+                $0.title?.contains(searchString.capitalized) ?? false
             }
         }
     }
@@ -32,28 +30,32 @@ struct SelectStationView: View {
     var body: some View {
         VStack {
             SearchBar(searchText: $searchString)
-            ScrollView {
-                LazyVStack(alignment: .leading) {
-                    ForEach(viewModel.stations, id: \.self) { station in
-                        ListRowView(settlement: station.title ?? "")
-                        .background()
-                        .onTapGesture {
-                            viewModel.setStation(station: station, direction: direction)
-                            viewModel.search()
-                            path = []
+            if !viewModel.stations.isEmpty {
+                ScrollView {
+                    LazyVStack(alignment: .leading) {
+                        ForEach(searchResults, id: \.self) { station in
+                            ListRowView(settlement: station.title ?? "")
+                                .background()
+                                .onTapGesture {
+                                    viewModel.setStation(station: station, direction: direction)
+                                    viewModel.backToRoot()
+                                }
                         }
                     }
+                    .padding([.leading,. trailing], 16)
                 }
-                .padding([.leading,. trailing], 16)
+                .navigationTitle("Выбор станции")
+                .toolbarRole(.editor)
+            } else if searchResults.isEmpty {
+                Spacer()
+                NotFoundView(filter: false)
             }
-            .navigationTitle("Выбор станции")
-            .toolbarRole(.editor)
             Spacer()
         }
     }
 }
 
 #Preview {
-    SelectStationView(direction: .from, path: .constant([""]))
+    SelectStationView(direction: .from)
         .environmentObject(ScheduleViewModel())
 }

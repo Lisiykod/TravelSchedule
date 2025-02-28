@@ -9,8 +9,9 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @EnvironmentObject private var viewModel: ScheduleViewModel
     @State private var isDarkModeOn = false
-    @Binding var path: [String]
+//    @Binding var path: [String]
     
     var body: some View {
             VStack {
@@ -26,7 +27,7 @@ struct SettingsView: View {
                     .background()
                     .frame(height: 60)
                     .onTapGesture {
-                        path.append("UserAgreementView")
+                        viewModel.addPath(with: Route.userAgreementView)
                     }
                 
                 Spacer()
@@ -44,5 +45,6 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(path: .constant([""]))
+    SettingsView()
+        .environmentObject(ScheduleViewModel())
 }

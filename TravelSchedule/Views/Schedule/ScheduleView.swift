@@ -10,7 +10,6 @@ import SwiftUI
 struct ScheduleView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
-    @Binding var path: [String]
     
     var body: some View {
             VStack(spacing: 16) {
@@ -19,18 +18,20 @@ struct ScheduleView: View {
                     HStack(spacing: 16) {
                         VStack(alignment: .leading) { 
                             SelectDestinationView(
-                                text:"\(viewModel.fromSettlemet?.title ?? "") (\(viewModel.fromStation?.title ?? ""))",
+                                settlement: viewModel.fromSettlemet?.title ?? "",
+                                station: viewModel.fromStation?.title ?? "",
                                 placeholder: "Откуда"
                             )
                                 .onTapGesture {
-                                    path.append(NavigationConstants.selectFromCityView.rawValue)
+                                    viewModel.addPath(with: Route.selectFromCityView)
                                 }
                             SelectDestinationView(
-                                text:"\(viewModel.toSettlemet?.title ?? "") (\(viewModel.toStation?.title ?? ""))",
+                                settlement: viewModel.toSettlemet?.title ?? "",
+                                station: viewModel.toStation?.title ?? "",
                                 placeholder: "Куда"
                             )
                             .onTapGesture {
-                                path.append(NavigationConstants.selectToCityView.rawValue)
+                                viewModel.addPath(with: Route.selectToCityView)
                             }
                         }
                         .frame(height: 96)
@@ -57,8 +58,11 @@ struct ScheduleView: View {
                 .frame(height: 128)
                 
                 Button {
-                    viewModel.search()
-                    path.append(NavigationConstants.carriersView.rawValue)
+                    viewModel.isLoading = true
+                    Task {
+                        await viewModel.search()
+                    }
+                    viewModel.addPath(with: Route.carriersView)
                 } label: {
                     Text("Найти")
                         .font(.system(size: 17, weight: .bold))
@@ -73,6 +77,6 @@ struct ScheduleView: View {
 }
 
 #Preview {
-    ScheduleView(path: .constant([""]))
+    ScheduleView()
         .environmentObject(ScheduleViewModel())
 }

@@ -23,18 +23,17 @@ struct CarrierCardView: View {
         generalFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         
         let startDateFormatter = DateFormatter()
-        startDateFormatter.dateFormat = "MM-DD"
+        startDateFormatter.locale = Locale(identifier: "Ru_ru")
+        startDateFormatter.dateFormat = "dd MMMM"
         
-        let beginTimeFormatter = DateFormatter()
-        beginTimeFormatter.dateFormat = "hh:mm"
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "HH:mm"
         
-        let endTimeFormatter = DateFormatter()
-        endTimeFormatter.dateFormat = "hh:mm"
         let currentDate = Date()
         
         startDateString = startDateFormatter.string(from: generalFormatter.date(from: segmentInfo.thread?.start_date ?? "") ?? currentDate)
-        beginTime = beginTimeFormatter.string(from: generalFormatter.date(from: segmentInfo.thread?.departure_date ?? "") ?? currentDate)
-        endTime = endTimeFormatter.string(from: generalFormatter.date(from: segmentInfo.thread?.arrival_date ?? "") ?? currentDate)
+        beginTime = timeFormatter.string(from: generalFormatter.date(from: segmentInfo.departure ?? "") ?? currentDate)
+        endTime = timeFormatter.string(from: generalFormatter.date(from: segmentInfo.arrival ?? "") ?? currentDate)
     }
     
     var body: some View {
@@ -42,16 +41,29 @@ struct CarrierCardView: View {
             Color.ypLightGray
             VStack(spacing: 14) {
                 HStack(alignment: .top, spacing: 18) {
-                    Image(segment.thread?.carrier?.logo ?? "emptyBrandIcon")
-                        .frame(width: 38, height: 38)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    AsyncImage(url: URL(string: segment.thread?.carrier?.logo ?? "")) { phase in
+                        switch phase {
+                        case .failure:
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        default:
+                            ProgressView()
+                        }
+                    }
+                    .frame(width: 38, height: 38)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                     VStack(alignment: .leading) {
                         Text(segment.thread?.carrier?.title ?? "")
                             .font(.system(size: 17, weight: .regular))
                         if segment.has_transfers ?? false {
-                            Text("Пересадка в \(segment.transfers ?? "")")
+                            Text("C пересадкой в: \(segment.transfers?.first?.title ?? "")")
                                 .font(.system(size: 12, weight: .regular))
                                 .foregroundStyle(.ypRedUniversal)
+                                .lineLimit(2)
                         }
                     }
                     Spacer()
@@ -64,7 +76,7 @@ struct CarrierCardView: View {
                     separator
                     Text("\(travelTime, specifier: "%.0f") часов")
                         .font(.system(size: 12, weight: .regular))
-                        
+                    
                     separator
                     Text(endTime)
                 }
@@ -81,7 +93,7 @@ struct CarrierCardView: View {
             .foregroundStyle(.ypGrayUniversal)
             .frame(height: 1)
     }
-
+    
 }
 
 #Preview {

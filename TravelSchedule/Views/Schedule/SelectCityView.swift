@@ -11,12 +11,10 @@ struct SelectCityView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @State private var searchString: String = ""
-    @Binding var path: [String]
     private var direction: Direction
     
-    init(direction: Direction, path: Binding<[String]>) {
+    init(direction: Direction) {
         self.direction = direction
-        self._path = path
     }
     
     var searchResults: [Settlements] {
@@ -24,42 +22,50 @@ struct SelectCityView: View {
             return viewModel.allSettlements
         } else {
             return viewModel.allSettlements.filter {
-                $0.title?.contains(searchString.lowercased()) ?? false
+                $0.title?.contains(searchString.capitalized) ?? false
             }
         }
     }
     
     var body: some View {
         VStack {
-            ProgressView()
             SearchBar(searchText: $searchString)
-            ScrollView {
-                LazyVStack(alignment: .leading) {
-                    ForEach(viewModel.allSettlements, id: \.self) { settlement in
-                        ListRowView(settlement: settlement.title ?? "")
-                            .background()
-                            .onTapGesture {
-                                switch direction {
-                                case .from:
-                                    path.append(NavigationConstants.selectFromStationView.rawValue)
-                                case .to:
-                                    path.append(NavigationConstants.selectToStationView.rawValue)
+            
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView()
+            } else if !viewModel.allSettlements.isEmpty {
+                ScrollView {
+                    LazyVStack(alignment: .leading) {
+                        ForEach(searchResults, id: \.self) { settlement in
+                            ListRowView(settlement: settlement.title ?? "")
+                                .background()
+                                .onTapGesture {
+                                    switch direction {
+                                    case .from:
+                                        viewModel.addPath(with: Route.selectFromStationView)
+                                    case .to:
+                                        viewModel.addPath(with: Route.selectToStationView)
+                                    }
+                                    viewModel.setSettlementsStations(on: settlement, direction: direction)
                                 }
-                                viewModel.setSettlementsStations(on: settlement, direction: direction)
-                            }
+                        }
                     }
+                    .padding([.leading,. trailing], 16)
                 }
-                .padding([.leading,. trailing], 16)
+            } else if searchResults.isEmpty {
+                Spacer()
+                NotFoundView(filter: false)
             }
-            .navigationTitle("Выбор города")
-            .toolbarRole(.editor)
             Spacer()
+                .navigationTitle("Выбор города")
+                .toolbarRole(.editor)
         }
     }
 }
 
 
 #Preview {
-    SelectCityView(direction: .from, path: .constant([""]))
+    SelectCityView(direction: .from)
         .environmentObject(ScheduleViewModel())
 }

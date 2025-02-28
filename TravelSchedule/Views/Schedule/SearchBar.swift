@@ -29,19 +29,19 @@ struct SearchBar: View {
                 .onTapGesture(perform: {
                     isSearching = true
                 })
-                .overlay(
+                .overlay(alignment: .center) {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .resizable()
                             .frame(width: 17, height: 17)
-                            .foregroundColor(.gray)
+                            .foregroundColor(searchText.count > 0 ? .ypBlack : .ypGrayUniversal)
                         
                         Spacer()
                         
-                        if isSearching && searchText.count > 0 {
+                        if searchText.count > 0 {
                             Button(action: { searchText = "" }, label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.ypGrayUniversal)
                                     .padding(.vertical)
                             })
                             
@@ -49,7 +49,7 @@ struct SearchBar: View {
                         
                     }.padding(.horizontal, 10)
                         .foregroundColor(.gray)
-                )
+                }
             }
             .frame(height: 37)
             .background(Color(red: 118.0/255, green: 118.0/255, blue: 128.0/255).opacity(0.12))

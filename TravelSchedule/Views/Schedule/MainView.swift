@@ -9,44 +9,44 @@ import SwiftUI
 
 struct MainView: View {
     
-    @State private var path: [String] = []
+    @ObservedObject var navigationService = NavigationService.shared
     
     var body: some View {
         
-        NavigationStack(path: $path) {
+        NavigationStack(path: $navigationService.path) {
             TabView {
-                ScheduleView(path: $path)
+                ScheduleView()
                     .tabItem {
                         Image("arrowUpIcon")
                             .renderingMode(.template)
                     }
                 
-                SettingsView(path: $path)
+                SettingsView()
                     .tabItem {
                         Image("SettingsIcon")
                             .renderingMode(.template)
                     }
             }
-            .navigationDestination(for: String.self) { destinationID in
-                switch destinationID {
-                case NavigationConstants.userAgreementView.rawValue:
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case Route.userAgreementView:
                     UserAgreementView()
-                case NavigationConstants.selectFromCityView.rawValue:
-                    SelectCityView(direction: .from, path: $path)
-                case NavigationConstants.selectFromStationView.rawValue:
-                    SelectStationView(direction: .from, path: $path)
-                case NavigationConstants.selectToCityView.rawValue:
-                    SelectCityView(direction: .to, path: $path)
-                case NavigationConstants.selectToStationView.rawValue:
-                    SelectStationView(direction: .to, path: $path)
-                case NavigationConstants.carriersView.rawValue:
-                    CarriersView(path: $path)
-                case NavigationConstants.noInternetView.rawValue:
+                case Route.selectFromCityView:
+                    SelectCityView(direction: .from)
+                case Route.selectFromStationView:
+                    SelectStationView(direction: .from)
+                case Route.selectToCityView:
+                    SelectCityView(direction: .to)
+                case Route.selectToStationView:
+                    SelectStationView(direction: .to)
+                case Route.carriersView:
+                    CarriersView()
+                case Route.noInternetView:
                     ErrorsView(error: .internetConnectError)
-                case NavigationConstants.serverErrorView.rawValue:
+                case Route.serverErrorView:
                     ErrorsView(error: .serverError)
-                default:
-                    ErrorsView(error: .internetConnectError)
+                case .selectCarrierInfoView:
+                    CarrierInfoView()
                 }
             }
         }

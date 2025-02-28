@@ -11,11 +11,11 @@ struct SelectDestinationView: View {
     let text: String
     let placeholder: String
     
-    init(text: String, placeholder: String) {
-        if text == "()".trimmingCharacters(in: .whitespacesAndNewlines) {
+    init(settlement: String, station: String, placeholder: String) {
+        if settlement == "".trimmingCharacters(in: .whitespacesAndNewlines) && station == "".trimmingCharacters(in: .whitespacesAndNewlines) {
             self.text = placeholder
         } else {
-            self.text = text
+            self.text = settlement + " (\(station))"
         }
         self.placeholder = placeholder
     }
@@ -34,5 +34,5 @@ struct SelectDestinationView: View {
 }
 
 #Preview {
-    SelectDestinationView(text: "", placeholder: "Откуда")
+    SelectDestinationView(settlement: "", station: "", placeholder: "Откуда")
 }

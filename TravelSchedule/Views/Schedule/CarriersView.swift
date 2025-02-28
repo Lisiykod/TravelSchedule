@@ -10,10 +10,9 @@ import SwiftUI
 struct CarriersView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
-    @Binding var path: [String]
-    
+
     var body: some View {
-        VStack(spacing: 16) {
+        VStack() {
             Group {
                 Text("\(viewModel.fromSettlemet?.title ?? "")" + " (\(viewModel.fromStation?.title ?? "")) ") +
                 Text(" -> ") +
@@ -21,33 +20,35 @@ struct CarriersView: View {
             }
             .font(.system(size: 24, weight: .bold))
             
-            if viewModel.carriersList.isEmpty {
+            if viewModel.isLoading {
                 Spacer()
-                NotFoundView(filter: true)
-            } else {
+                ProgressView()
+            } else if !viewModel.carriersList.isEmpty {
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ForEach(viewModel.carriersList, id: \.self) { segment in
                             CarrierCardView(segmentInfo: segment)
                                 .frame(height: 104)
-                                .padding(16)
+//                                .padding(16)
                                 .onTapGesture {
                                     viewModel.carrier = segment.thread?.carrier
-                                    path.append(NavigationConstants.selectCarrierInfoView.rawValue)
+                                    viewModel.addPath(with: Route.selectCarrierInfoView)
                                 }
                         }
                     }
                 }
-                .toolbarRole(.editor)
+            } else {
+                Spacer()
+                NotFoundView(filter: true)
             }
-            
             Spacer()
+                .toolbarRole(.editor)
         }
         .padding(16)
     }
 }
 
 #Preview {
-    CarriersView(path: .constant([""]))
+    CarriersView()
         .environmentObject(ScheduleViewModel())
 }
