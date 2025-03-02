@@ -19,8 +19,10 @@ struct ListRowView: View {
                     .font(.system(size: 17, weight: .regular))
                     .padding([.top, .bottom], 19)
                 Spacer()
-                Image("Chevron")
+                Image(systemName: "chevron.right")
+                    .imageScale(.large)
             }
+            .foregroundStyle(.ypBlack)
         }
     }
 }
