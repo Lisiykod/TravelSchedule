@@ -22,4 +22,8 @@ class NavigationService: ObservableObject {
     func popRoot() {
         path.removeAll()
     }
+    
+    func popLast() {
+        path.removeLast()
+    }
 }

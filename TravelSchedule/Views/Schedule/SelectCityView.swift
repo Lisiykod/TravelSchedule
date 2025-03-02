@@ -53,6 +53,7 @@ struct SelectCityView: View {
                     }
                     .padding([.leading,. trailing], 16)
                 }
+                .scrollIndicators(.hidden)
             } else if searchResults.isEmpty {
                 Spacer()
                 NotFoundView(filter: false)

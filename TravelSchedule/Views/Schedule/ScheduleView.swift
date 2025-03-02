@@ -71,6 +71,7 @@ struct ScheduleView: View {
                         .background(.ypBlue)
                         .cornerRadius(16)
                 }
+                .opacity(viewModel.setSearchButtonEnable() ? 1 : 0 )
                 
             } // VStack
         }

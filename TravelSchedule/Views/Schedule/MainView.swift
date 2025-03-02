@@ -47,6 +47,8 @@ struct MainView: View {
                     ErrorsView(error: .serverError)
                 case .selectCarrierInfoView:
                     CarrierInfoView()
+                case .filtersView:
+                    FiltersView()
                 }
             }
         }

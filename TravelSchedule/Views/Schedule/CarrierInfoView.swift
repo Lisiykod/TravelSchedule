@@ -11,7 +11,6 @@ struct CarrierInfoView: View {
     @EnvironmentObject private var viewModel: ScheduleViewModel
     
     var body: some View {
-        ZStack {
             VStack(alignment: .leading) {
                 VStack(alignment: .center) {
                     AsyncImage(url: URL(string: viewModel.carrier?.logo ?? "")) { phase in
@@ -58,7 +57,6 @@ struct CarrierInfoView: View {
             }
             .padding(16)
         }
-    }
     
 }
 

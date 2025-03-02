@@ -13,6 +13,13 @@ typealias Stations = Components.Schemas.StationsFromStationsList
 typealias Segments = Components.Schemas.Segments
 typealias Carrier = Components.Schemas.Carrier
 
+enum DepartureTimeInterval: String {
+    case morning = "Утро 06:00 - 12:00"
+    case afternoon = "День 12:00 - 18:00"
+    case evening = "Вечер 18:00 - 00:00"
+    case night = "Ночь 00:00 - 06:00"
+}
+
 enum Direction {
     case from
     case to
@@ -34,42 +41,21 @@ final class ScheduleViewModel: ObservableObject {
     @Published var carriersList: [Segments] = []
     @Published var carrier: Carrier?
     @Published var isLoading: Bool = true
+    @Published var isFilter: Bool = false
+    @Published var filteredCarriersList: [Segments] = []
+    @Published var departureTimeIntervals: [DepartureTimeInterval] = []
+    @Published var hasTransfers: Bool = true
     
     private let navigationService = NavigationService.shared
     
+    // MARK: - Initializer
     init() {
         Task {
             await getAllSettlements()
         }
     }
     
-    @MainActor
-    private func getAllSettlements() async {
-        var stationList: [Settlements] = []
-        let testSettlements = ["Москва", "Санкт-Петербург", "Сочи", "Горный Воздух", "Краснодар", "Казань", "Омск"]
-        do {
-            let allStationsList = try await getStationsList()
-            for country in allStationsList.countries ?? [] {
-                for region in country.regions ?? [] {
-                    for city in region.settlements ?? [] {
-                        if testSettlements.contains(city.title ?? "") {
-                            stationList.append(city)
-                        }
-                    }
-                }
-            }
-        } catch ErrorsType.internetConnectError {
-            addPath(with: Route.noInternetView)
-        } catch ErrorsType.serverError {
-            addPath(with: Route.serverErrorView)
-        } catch {
-            print(error.localizedDescription)
-        }
-        
-        allSettlements = stationList.filter { $0.title != ""}
-        isLoading = allSettlements.isEmpty ? true : false
-        allSettlements.sort {$0.title! < $1.title! }
-    }
+    // MARK: - Public Methods
     
     func setSettlementsStations(on settlement: Settlements, direction: Direction) {
         let allStations = settlement.stations ?? []
@@ -111,29 +97,56 @@ final class ScheduleViewModel: ObservableObject {
             client: client,
             apiKey: Constants.apiKey
         )
+        
         guard let fromCode = fromStation?.codes?.yandex_code,
               let toCode = toStation?.codes?.yandex_code else { return }
         
         do {
-            let searchResult = try await service.getSearchResult(from: fromCode, to: toCode, on: date, transportType: "train", transfers: true)
+            let searchResult = try await service.getSearchResult(from: fromCode, to: toCode, on: date, transportType: "train", transfers: hasTransfers)
             carriersList = searchResult.segments ?? []
+            filteredCarriersList = carriersList
         } catch ErrorsType.internetConnectError {
             addPath(with: Route.noInternetView)
         } catch ErrorsType.serverError {
             addPath(with: Route.serverErrorView)
         } catch {
+            addPath(with: Route.noInternetView)
             print(String(describing: error))
         }
         
         isLoading = false
     }
     
-    func dateFormatter(from date: String, with format: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        dateFormatter.locale = Locale.current
-        let dateFromString = dateFormatter.date(from: date)
-        return dateFormatter.string(from: dateFromString ?? Date())
+    func setFilters() {
+        var filteredCarriers = carriersList
+        
+        if !departureTimeIntervals.isEmpty {
+            filteredCarriers = filteredCarriers.filter { segment in
+                let time = departureTime(departure: segment.departure ?? "")
+                    switch time {
+                    case 6...12:
+                        return departureTimeIntervals.contains(.morning)
+                    case 12...18:
+                        return departureTimeIntervals.contains(.afternoon)
+                    case 18...23:
+                        return departureTimeIntervals.contains(.night)
+                    case 0...6:
+                        return departureTimeIntervals.contains(.night)
+                    default:
+                        return false
+                    }
+                }
+        }
+        
+        if !hasTransfers {
+            filteredCarriers = filteredCarriers.filter {$0.has_transfers == false }
+        }
+        
+        filteredCarriersList = filteredCarriers
+    }
+    
+    func setSearchButtonEnable() -> Bool {
+        return fromStation != nil && toStation != nil 
     }
     
     func addPath(with route: Route) {
@@ -143,69 +156,47 @@ final class ScheduleViewModel: ObservableObject {
     func backToRoot() {
         navigationService.popRoot()
     }
-    // MARK: - Services
-
-    private func getThread() {
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = ThreadService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
-        Task {
-            do {
-                let thread = try await service.getThread(uid: "UJ-615_250211_c1764_12")
-                print("thread: \(thread)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
-            }
-        }
+    
+    func popLast() {
+        navigationService.popLast()
     }
     
-    private func getSchedule() {
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = ScheduleService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
-        Task {
-            do {
-                let schedule = try await service.getSchedule(station: "s9600213")
-                print("schedule: \(schedule)")
-            } catch {
-                print("error response: \(error.localizedDescription)")
+    // MARK: - Private Methods
+    @MainActor
+    private func getAllSettlements() async {
+        var stationList: [Settlements] = []
+        let testSettlements = ["Москва", "Санкт-Петербург", "Сочи", "Горный Воздух", "Краснодар", "Казань", "Омск"]
+        do {
+            let allStationsList = try await getStationsList()
+            for country in allStationsList.countries ?? [] {
+                for region in country.regions ?? [] {
+                    for city in region.settlements ?? [] {
+                        if testSettlements.contains(city.title ?? "") {
+                            stationList.append(city)
+                        }
+                    }
+                }
             }
+        } catch ErrorsType.internetConnectError {
+            addPath(with: Route.noInternetView)
+        } catch ErrorsType.serverError {
+            addPath(with: Route.serverErrorView)
+        } catch {
+            print(error.localizedDescription)
         }
+        
+        allSettlements = stationList.filter { $0.title != ""}
+        isLoading = allSettlements.isEmpty ? true : false
+        allSettlements.sort {$0.title! < $1.title! }
     }
     
-//        private func getSearch(date: String? = nil, transportType: String, transfers: Bool) throws -> SearchResult? {
-//            let client = createClient()
-//            guard let client else { return nil }
-//    
-//            let service = SearchService(
-//                client: client,
-//                apiKey: Constants.apiKey
-//            )
-//            guard let fromCode = fromStation?.codes?.yandex_code,
-//                  let toCode = toStation?.codes?.yandex_code else { return nil }
-//    
-//            var search: SearchResult?
-//            Task {
-//                do {
-//                    search = try await service.getSearchResult(from: fromCode, to: toCode, on: date, transportType: transportType, transfers: transfers)
-//                    print("search \(String(describing: search))")
-//                } catch {
-//                    throw ErrorsType.serverError
-//                }
-//            }
-//            return search
-//        }
-//    
+    private func departureTime(departure: String) -> Int {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        
+        let hour = Calendar.current.component(.hour, from: dateFormatter.date(from: departure) ?? Date())
+        return hour
+    }
     
     private func getStationsList() async throws -> StationsList {
         let client = createClient()

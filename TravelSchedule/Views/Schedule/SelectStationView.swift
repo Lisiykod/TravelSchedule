@@ -44,6 +44,7 @@ struct SelectStationView: View {
                     }
                     .padding([.leading,. trailing], 16)
                 }
+                .scrollIndicators(.hidden)
                 .navigationTitle("Выбор станции")
                 .toolbarRole(.editor)
             } else if searchResults.isEmpty {
