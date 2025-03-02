@@ -10,25 +10,28 @@ import SwiftUI
 struct SettingsView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
-    @State private var isDarkModeOn = false
-//    @Binding var path: [String]
+    @AppStorage("appTheme") private var isDarkModeOn = false
     
     var body: some View {
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            
             VStack {
                 Toggle("Темная тема", isOn: $isDarkModeOn)
                     .toggleStyle(SwitchToggleStyle(tint: .ypBlue))
                     .frame(height: 60)
                 
-                    HStack() {
-                        Text("Пользовательское соглашение")
-                        Spacer()
-                        Image("Chevron")
-                    }
-                    .background()
-                    .frame(height: 60)
-                    .onTapGesture {
-                        viewModel.addPath(with: Route.userAgreementView)
-                    }
+                HStack() {
+                    Text("Пользовательское соглашение")
+                    Spacer()
+                    Image("Chevron")
+                }
+                .foregroundStyle(.ypBlack)
+                .background(.ypWhite)
+                .frame(height: 60)
+                .onTapGesture {
+                    viewModel.addPath(with: Route.userAgreementView)
+                }
                 
                 Spacer()
                 
@@ -41,6 +44,7 @@ struct SettingsView: View {
             }
             .foregroundStyle(.ypBlack)
             .padding(16)
+        }
     }
 }
 

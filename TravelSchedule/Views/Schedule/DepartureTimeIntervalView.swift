@@ -14,22 +14,26 @@ struct DepartureTimeIntervalView: View {
     var selectedTimeInterval: DepartureTimeInterval
     
     var body: some View {
-        HStack {
-            Text(selectedTimeInterval.rawValue)
-            Spacer()
-            Image(systemName: selectCheckBox ? "checkmark.square.fill" : "square")
-                .frame(width: 20, height: 20)
-                .onTapGesture {
-                    if !departureTimeInterval.contains(selectedTimeInterval) {
-                        departureTimeInterval.append(selectedTimeInterval)
-                        selectCheckBox = true
-                    } else {
-                        departureTimeInterval = departureTimeInterval.filter { $0 != selectedTimeInterval}
-                        selectCheckBox = false
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            HStack {
+                Text(selectedTimeInterval.rawValue)
+                Spacer()
+                Image(systemName: selectCheckBox ? "checkmark.square.fill" : "square")
+                    .frame(width: 20, height: 20)
+                    .onTapGesture {
+                        if !departureTimeInterval.contains(selectedTimeInterval) {
+                            departureTimeInterval.append(selectedTimeInterval)
+                            selectCheckBox = true
+                        } else {
+                            departureTimeInterval = departureTimeInterval.filter { $0 != selectedTimeInterval}
+                            selectCheckBox = false
+                        }
                     }
-                }
+            }
+            .foregroundStyle(.ypBlack)
+            .padding([.top, .bottom], 19)
         }
-        .padding([.top, .bottom], 19)
     }
 }
 

@@ -70,16 +70,17 @@ struct CarrierCardView: View {
                     Text(startDateString)
                         .font(.system(size: 12, weight: .regular))
                 }
+                .foregroundStyle(.ypBlackUniversal)
                 
                 HStack {
                     Text(beginTime)
                     separator
                     Text("\(travelTime, specifier: "%.0f") часов")
                         .font(.system(size: 12, weight: .regular))
-                    
                     separator
                     Text(endTime)
                 }
+                .foregroundStyle(.ypBlackUniversal)
             }
             .padding([.leading, .trailing], 16)
             .padding([.top, .bottom], 14)

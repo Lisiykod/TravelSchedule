@@ -28,30 +28,33 @@ struct SelectStationView: View {
     }
     
     var body: some View {
-        VStack {
-            SearchBar(searchText: $searchString)
-            if !viewModel.stations.isEmpty {
-                ScrollView {
-                    LazyVStack(alignment: .leading) {
-                        ForEach(searchResults, id: \.self) { station in
-                            ListRowView(settlement: station.title ?? "")
-                                .background()
-                                .onTapGesture {
-                                    viewModel.setStation(station: station, direction: direction)
-                                    viewModel.backToRoot()
-                                }
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            VStack {
+                SearchBar(searchText: $searchString)
+                if !searchResults.isEmpty {
+                    ScrollView {
+                        LazyVStack(alignment: .leading) {
+                            ForEach(searchResults) { station in
+                                ListRowView(settlement: station.title ?? "")
+                                    .background()
+                                    .onTapGesture {
+                                        viewModel.setStation(station: station, direction: direction)
+                                        viewModel.backToRoot()
+                                    }
+                            }
                         }
+                        .padding([.leading,. trailing], 16)
                     }
-                    .padding([.leading,. trailing], 16)
+                    .scrollIndicators(.hidden)
+                    .navigationTitle("Выбор станции")
+                    .toolbarRole(.editor)
+                } else if searchResults.isEmpty {
+                    Spacer()
+                    NotFoundView(filter: false)
                 }
-                .scrollIndicators(.hidden)
-                .navigationTitle("Выбор станции")
-                .toolbarRole(.editor)
-            } else if searchResults.isEmpty {
                 Spacer()
-                NotFoundView(filter: false)
             }
-            Spacer()
         }
     }
 }

@@ -11,9 +11,12 @@ struct NotFoundView: View {
     let filter: Bool
     
     var body: some View {
-        Text(filter ? "Вариантов нет" : "Город не найден")
-            .font(.system(size: 24, weight: .bold))
-            .foregroundStyle(.ypBlack)
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            Text(filter ? "Вариантов нет" : "Город не найден")
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(.ypBlack)
+        }
     }
 }
 

@@ -27,7 +27,7 @@ struct SelectDestinationView: View {
                 .padding([.top, .bottom], 14)
                 .padding([.leading], 16)
                 .lineLimit(1)
-                .foregroundStyle(text != placeholder ? .ypBlack : .ypGray)
+                .foregroundStyle(text != placeholder ? .ypBlackUniversal : .ypGrayUniversal)
         }
         .cornerRadius(20)
     }

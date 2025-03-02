@@ -8,28 +8,6 @@
 import Foundation
 import OpenAPIURLSession
 
-typealias Settlements = Components.Schemas.SettlementsFromStationsList
-typealias Stations = Components.Schemas.StationsFromStationsList
-typealias Segments = Components.Schemas.Segments
-typealias Carrier = Components.Schemas.Carrier
-
-enum DepartureTimeInterval: String {
-    case morning = "Утро 06:00 - 12:00"
-    case afternoon = "День 12:00 - 18:00"
-    case evening = "Вечер 18:00 - 00:00"
-    case night = "Ночь 00:00 - 06:00"
-}
-
-enum Direction {
-    case from
-    case to
-}
-
-enum ErrorsType: Error {
-    case serverError
-    case internetConnectError
-}
-
 final class ScheduleViewModel: ObservableObject {
     
     @Published var allSettlements: [Settlements] = []
@@ -162,6 +140,7 @@ final class ScheduleViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
     @MainActor
     private func getAllSettlements() async {
         var stationList: [Settlements] = []

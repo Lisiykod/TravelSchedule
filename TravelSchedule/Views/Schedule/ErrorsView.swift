@@ -23,11 +23,14 @@ struct ErrorsView: View {
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: 16) {
-            Image(imageName)
-            Text(text)
-                .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(.ypBlack)
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            VStack(alignment: .center, spacing: 16) {
+                Image(imageName)
+                Text(text)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(.ypBlack)
+            }
         }
     }
 }

@@ -13,15 +13,19 @@ struct CircleButtonRowView: View {
     @Binding var selectTransfer: Bool
     
     var body: some View {
-        HStack {
-            Text(hasTransfer ? "Да" : "Нет")
-            Spacer()
-            Image(systemName: selectTransfer == hasTransfer ? "largecircle.fill.circle" : "circle")
-                .onTapGesture {
-                    selectTransfer = hasTransfer
-                }
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            HStack {
+                Text(hasTransfer ? "Да" : "Нет")
+                Spacer()
+                Image(systemName: selectTransfer == hasTransfer ? "largecircle.fill.circle" : "circle")
+                    .onTapGesture {
+                        selectTransfer = hasTransfer
+                    }
+            }
+            .padding([.top, .bottom], 19)
+            .foregroundStyle(.ypBlack)
         }
-        .padding([.top, .bottom], 19)
     }
 }
 

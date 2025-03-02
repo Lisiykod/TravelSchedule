@@ -11,6 +11,8 @@ struct CarrierInfoView: View {
     @EnvironmentObject private var viewModel: ScheduleViewModel
     
     var body: some View {
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
             VStack(alignment: .leading) {
                 VStack(alignment: .center) {
                     AsyncImage(url: URL(string: viewModel.carrier?.logo ?? "")) { phase in
@@ -55,8 +57,10 @@ struct CarrierInfoView: View {
                     .toolbarRole(.editor)
                     .navigationTitle("Информация о перевозчике")
             }
+            .foregroundStyle(.ypBlack)
             .padding(16)
         }
+    }
     
 }
 

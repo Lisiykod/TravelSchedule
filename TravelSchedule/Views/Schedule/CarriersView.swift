@@ -13,6 +13,7 @@ struct CarriersView: View {
     
     var body: some View {
         ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
             VStack(spacing: 16) {
                 Group {
                     Text("\(viewModel.fromSettlemet?.title ?? "")" + " (\(viewModel.fromStation?.title ?? "")) ") +
@@ -28,7 +29,7 @@ struct CarriersView: View {
                     ZStack(alignment: .bottom) {
                         ScrollView {
                             LazyVStack(spacing: 8) {
-                                ForEach(viewModel.filteredCarriersList, id: \.self) { segment in
+                                ForEach(viewModel.filteredCarriersList) { segment in
                                     CarrierCardView(segmentInfo: segment)
                                         .frame(height: 104)
                                         .onTapGesture {
@@ -73,6 +74,7 @@ struct CarriersView: View {
                 Spacer()
                     .toolbarRole(.editor)
             }
+            .foregroundStyle(.ypBlack)
             .padding(16)
             
         } //ZStack

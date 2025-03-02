@@ -12,12 +12,15 @@ struct ListRowView: View {
     var settlement: String
     
     var body: some View {
-        HStack {
-            Text(settlement)
-             .font(.system(size: 17, weight: .regular))
-             .padding([.top, .bottom], 19)
-            Spacer()
-            Image("Chevron")
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            HStack {
+                Text(settlement)
+                    .font(.system(size: 17, weight: .regular))
+                    .padding([.top, .bottom], 19)
+                Spacer()
+                Image("Chevron")
+            }
         }
     }
 }

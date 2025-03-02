@@ -12,6 +12,8 @@ struct ScheduleView: View {
     @EnvironmentObject private var viewModel: ScheduleViewModel
     
     var body: some View {
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
             VStack(spacing: 16) {
                 ZStack {
                     Color.ypBlue
@@ -22,9 +24,9 @@ struct ScheduleView: View {
                                 station: viewModel.fromStation?.title ?? "",
                                 placeholder: "Откуда"
                             )
-                                .onTapGesture {
-                                    viewModel.addPath(with: Route.selectFromCityView)
-                                }
+                            .onTapGesture {
+                                viewModel.addPath(with: Route.selectFromCityView)
+                            }
                             SelectDestinationView(
                                 settlement: viewModel.toSettlemet?.title ?? "",
                                 station: viewModel.toStation?.title ?? "",
@@ -49,7 +51,7 @@ struct ScheduleView: View {
                                 .background(.white)
                                 .cornerRadius(40)
                         }
-
+                        
                     } // HStack
                     .padding(16)
                 } // ZStack
@@ -73,7 +75,8 @@ struct ScheduleView: View {
                 }
                 .opacity(viewModel.setSearchButtonEnable() ? 1 : 0 )
                 
-            } // VStack
+            }
+        } // VStack
         }
 }
 

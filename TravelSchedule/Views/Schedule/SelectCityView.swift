@@ -28,39 +28,42 @@ struct SelectCityView: View {
     }
     
     var body: some View {
-        VStack {
-            SearchBar(searchText: $searchString)
-            
-            if viewModel.isLoading {
-                Spacer()
-                ProgressView()
-            } else if !viewModel.allSettlements.isEmpty {
-                ScrollView {
-                    LazyVStack(alignment: .leading) {
-                        ForEach(searchResults, id: \.self) { settlement in
-                            ListRowView(settlement: settlement.title ?? "")
-                                .background()
-                                .onTapGesture {
-                                    switch direction {
-                                    case .from:
-                                        viewModel.addPath(with: Route.selectFromStationView)
-                                    case .to:
-                                        viewModel.addPath(with: Route.selectToStationView)
+        ZStack {
+            Color.ypWhite.ignoresSafeArea(.all)
+            VStack {
+                SearchBar(searchText: $searchString)
+                
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView()
+                } else if !searchResults.isEmpty {
+                    ScrollView {
+                        LazyVStack(alignment: .leading) {
+                            ForEach(searchResults) { settlement in
+                                ListRowView(settlement: settlement.title ?? "")
+                                    .background()
+                                    .onTapGesture {
+                                        switch direction {
+                                        case .from:
+                                            viewModel.addPath(with: Route.selectFromStationView)
+                                        case .to:
+                                            viewModel.addPath(with: Route.selectToStationView)
+                                        }
+                                        viewModel.setSettlementsStations(on: settlement, direction: direction)
                                     }
-                                    viewModel.setSettlementsStations(on: settlement, direction: direction)
-                                }
+                            }
                         }
+                        .padding([.leading,. trailing], 16)
                     }
-                    .padding([.leading,. trailing], 16)
+                    .scrollIndicators(.hidden)
+                } else {
+                    Spacer()
+                    NotFoundView(filter: false)
                 }
-                .scrollIndicators(.hidden)
-            } else if searchResults.isEmpty {
                 Spacer()
-                NotFoundView(filter: false)
+                    .navigationTitle("Выбор города")
+                    .toolbarRole(.editor)
             }
-            Spacer()
-                .navigationTitle("Выбор города")
-                .toolbarRole(.editor)
         }
     }
 }
