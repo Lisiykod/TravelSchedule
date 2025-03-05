@@ -39,7 +39,7 @@ struct SelectCityView: View {
                 } else if !searchResults.isEmpty {
                     ScrollView {
                         LazyVStack(alignment: .leading) {
-                            ForEach(searchResults) { settlement in
+                            ForEach(searchResults, id: \.self) { settlement in
                                 ListRowView(settlement: settlement.title ?? "")
                                     .background()
                                     .onTapGesture {
@@ -58,7 +58,7 @@ struct SelectCityView: View {
                     .scrollIndicators(.hidden)
                 } else {
                     Spacer()
-                    NotFoundView(filter: false)
+                    NotFoundView(text: "Город не найден")
                 }
                 Spacer()
                     .navigationTitle("Выбор города")

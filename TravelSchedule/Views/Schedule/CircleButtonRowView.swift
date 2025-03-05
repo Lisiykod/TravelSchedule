@@ -23,9 +23,9 @@ struct CircleButtonRowView: View {
                         selectTransfer = hasTransfer
                     }
             }
-            .padding([.top, .bottom], 19)
             .foregroundStyle(.ypBlack)
         }
+        .frame(height: 60)
     }
 }
 

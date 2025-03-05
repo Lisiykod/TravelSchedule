@@ -35,7 +35,7 @@ struct SelectStationView: View {
                 if !searchResults.isEmpty {
                     ScrollView {
                         LazyVStack(alignment: .leading) {
-                            ForEach(searchResults) { station in
+                            ForEach(searchResults, id: \.self) { station in
                                 ListRowView(settlement: station.title ?? "")
                                     .background()
                                     .onTapGesture {
@@ -51,7 +51,7 @@ struct SelectStationView: View {
                     .toolbarRole(.editor)
                 } else if searchResults.isEmpty {
                     Spacer()
-                    NotFoundView(filter: false)
+                    NotFoundView(text: "Станция не найдена")
                 }
                 Spacer()
             }

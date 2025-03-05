@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct NotFoundView: View {
-    let filter: Bool
+    let text: String
     
     var body: some View {
         ZStack {
             Color.ypWhite.ignoresSafeArea(.all)
-            Text(filter ? "Вариантов нет" : "Город не найден")
+            Text(text)
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(.ypBlack)
         }
@@ -21,5 +21,5 @@ struct NotFoundView: View {
 }
 
 #Preview {
-    NotFoundView(filter: false)
+    NotFoundView(text: "Город не найден")
 }

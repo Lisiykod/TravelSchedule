@@ -24,6 +24,7 @@ struct DepartureTimeIntervalView: View {
                     .onTapGesture {
                         if !departureTimeInterval.contains(selectedTimeInterval) {
                             departureTimeInterval.append(selectedTimeInterval)
+                            print("departureTimeInterval \(departureTimeInterval)")
                             selectCheckBox = true
                         } else {
                             departureTimeInterval = departureTimeInterval.filter { $0 != selectedTimeInterval}
@@ -32,8 +33,8 @@ struct DepartureTimeIntervalView: View {
                     }
             }
             .foregroundStyle(.ypBlack)
-            .padding([.top, .bottom], 19)
         }
+        .frame(height: 60)
     }
 }
 

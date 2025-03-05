@@ -20,6 +20,7 @@ struct CarrierInfoView: View {
                         case .failure:
                             Image(systemName: "photo")
                                 .font(.largeTitle)
+                                .foregroundStyle(.ypBlackUniversal)
                         case .success(let image):
                             image
                                 .resizable()
@@ -27,9 +28,11 @@ struct CarrierInfoView: View {
                         default:
                             Image(systemName: "photo")
                                 .font(.largeTitle)
+                                .foregroundStyle(.ypBlackUniversal)
                         }
                     }
                     .frame(width: 343, height: 104)
+                    .background(.ypWhiteUniversal)
                     .clipShape(.rect(cornerRadius: 24))
                 }
                 

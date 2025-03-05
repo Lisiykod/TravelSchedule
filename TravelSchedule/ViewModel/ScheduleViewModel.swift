@@ -7,6 +7,7 @@
 
 import Foundation
 import OpenAPIURLSession
+import OpenAPIRuntime
 
 final class ScheduleViewModel: ObservableObject {
     
@@ -88,7 +89,7 @@ final class ScheduleViewModel: ObservableObject {
         } catch ErrorsType.serverError {
             addPath(with: Route.serverErrorView)
         } catch {
-            addPath(with: Route.noInternetView)
+            addPath(with: Route.serverErrorView)
             print(String(describing: error))
         }
         
@@ -107,7 +108,7 @@ final class ScheduleViewModel: ObservableObject {
                     case 12...18:
                         return departureTimeIntervals.contains(.afternoon)
                     case 18...23:
-                        return departureTimeIntervals.contains(.night)
+                        return departureTimeIntervals.contains(.evening)
                     case 0...6:
                         return departureTimeIntervals.contains(.night)
                     default:
@@ -161,7 +162,8 @@ final class ScheduleViewModel: ObservableObject {
         } catch ErrorsType.serverError {
             addPath(with: Route.serverErrorView)
         } catch {
-            print(error.localizedDescription)
+            addPath(with: Route.serverErrorView)
+            print(String(describing: error))
         }
         
         allSettlements = stationList.filter { $0.title != ""}

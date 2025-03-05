@@ -29,7 +29,7 @@ struct CarriersView: View {
                     ZStack(alignment: .bottom) {
                         ScrollView {
                             LazyVStack(spacing: 8) {
-                                ForEach(viewModel.filteredCarriersList) { segment in
+                                ForEach(viewModel.filteredCarriersList, id: \.self) { segment in
                                     CarrierCardView(segmentInfo: segment)
                                         .frame(height: 104)
                                         .onTapGesture {
@@ -58,7 +58,6 @@ struct CarriersView: View {
                                             .foregroundStyle(viewModel.isFilter ? .ypRedUniversal : .ypBlue)
                                     }
                                 } icon: {}
-//                                    .padding()
                                 
                             }
                             .frame(idealWidth: 343, maxWidth: .infinity, maxHeight: 60)
@@ -69,7 +68,7 @@ struct CarriersView: View {
                     }
                 } else {
                     Spacer()
-                    NotFoundView(filter: true)
+                    NotFoundView(text: "Вариантов нет")
                 }
                 Spacer()
                     .toolbarRole(.editor)
