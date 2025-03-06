@@ -24,7 +24,7 @@ struct ErrorsView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack(alignment: .center, spacing: 16) {
                 Image(imageName)
                 Text(text)

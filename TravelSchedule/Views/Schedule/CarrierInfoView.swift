@@ -12,9 +12,9 @@ struct CarrierInfoView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack(alignment: .leading) {
-                VStack(alignment: .center) {
+                VStack {
                     AsyncImage(url: URL(string: viewModel.carrier?.logo ?? "")) { phase in
                         switch phase {
                         case .failure:

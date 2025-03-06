@@ -13,7 +13,7 @@ struct ListRowView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             HStack {
                 Text(settlement)
                     .font(.system(size: 17, weight: .regular))

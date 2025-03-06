@@ -35,7 +35,7 @@ final class SearchService: SearchServiceProtocol {
                 transfers: String(transfers)
             )
         )
-        print("responce \(try response.ok.body.json)")
+
         return try response.ok.body.json
     }
 }

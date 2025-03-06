@@ -10,11 +10,11 @@ import SwiftUI
 struct SettingsView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
-    @AppStorage("appTheme") private var isDarkModeOn = false
+    @AppStorage(Constants.appThemeKey) private var isDarkModeOn = false
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             
             VStack {
                 Toggle("Темная тема", isOn: $isDarkModeOn)

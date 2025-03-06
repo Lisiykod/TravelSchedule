@@ -7,9 +7,9 @@
 
 import Foundation
 
-class NavigationService: ObservableObject {
+final class Router: ObservableObject {
     
-    static let shared = NavigationService()
+    static let shared = Router()
     
     @Published var path: [Route] = []
     

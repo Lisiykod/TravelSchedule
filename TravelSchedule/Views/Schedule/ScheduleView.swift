@@ -13,14 +13,14 @@ struct ScheduleView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack(spacing: 16) {
                 ZStack {
                     Color.ypBlue
                     HStack(spacing: 16) {
-                        VStack(alignment: .leading) { 
+                        VStack(alignment: .leading) {
                             SelectDestinationView(
-                                settlement: viewModel.fromSettlemet?.title ?? "",
+                                settlement: viewModel.fromSettlement?.title ?? "",
                                 station: viewModel.fromStation?.title ?? "",
                                 placeholder: "Откуда"
                             )
@@ -28,7 +28,7 @@ struct ScheduleView: View {
                                 viewModel.addPath(with: Route.selectFromCityView)
                             }
                             SelectDestinationView(
-                                settlement: viewModel.toSettlemet?.title ?? "",
+                                settlement: viewModel.toSettlement?.title ?? "",
                                 station: viewModel.toStation?.title ?? "",
                                 placeholder: "Куда"
                             )
@@ -52,11 +52,11 @@ struct ScheduleView: View {
                                 .cornerRadius(40)
                         }
                         
-                    } // HStack
+                    }
                     .padding(16)
-                } // ZStack
+                }
                 .cornerRadius(20)
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
                 .frame(height: 128)
                 
                 Button {
@@ -76,8 +76,8 @@ struct ScheduleView: View {
                 .opacity(viewModel.setSearchButtonEnable() ? 1 : 0 )
                 
             }
-        } // VStack
         }
+    }
 }
 
 #Preview {

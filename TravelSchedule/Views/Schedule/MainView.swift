@@ -9,13 +9,13 @@ import SwiftUI
 
 struct MainView: View {
     
-    @ObservedObject var navigationService = NavigationService.shared
+    @ObservedObject var navigationService = Router.shared
     
     var body: some View {
         
         NavigationStack(path: $navigationService.path) {
             ZStack {
-                Color.ypWhite.ignoresSafeArea(.all)
+                Color.ypWhite.ignoresSafeArea()
                 TabView {
                     ScheduleView()
                         .tabItem {

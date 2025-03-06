@@ -9,31 +9,21 @@ import SwiftUI
 
 struct CarrierCardView: View {
     
+    @EnvironmentObject private var viewModel: ScheduleViewModel
+    
     private let segment: Segments
-    private let startDateString: String
-    private let beginTime: String
-    private let endTime: String
+    private let startDate: String
+    private let departureTime: String
+    private let arrivalTime: String
     private let travelTime: Double
     
-    init(segmentInfo: Segments) {
+    init(segmentInfo: Segments, startDate: String, departureTime: String, arrivalTime: String) {
         self.segment = segmentInfo
         travelTime = (segment.duration ?? 0)/3600
         
-        let generalFormatter = DateFormatter()
-        generalFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        
-        let startDateFormatter = DateFormatter()
-        startDateFormatter.locale = Locale(identifier: "Ru_ru")
-        startDateFormatter.dateFormat = "dd MMMM"
-        
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "HH:mm"
-        
-        let currentDate = Date()
-        
-        startDateString = startDateFormatter.string(from: generalFormatter.date(from: segmentInfo.thread?.start_date ?? "") ?? currentDate)
-        beginTime = timeFormatter.string(from: generalFormatter.date(from: segmentInfo.departure ?? "") ?? currentDate)
-        endTime = timeFormatter.string(from: generalFormatter.date(from: segmentInfo.arrival ?? "") ?? currentDate)
+        self.startDate = startDate
+        self.departureTime = departureTime
+        self.arrivalTime = arrivalTime
     }
     
     var body: some View {
@@ -57,33 +47,32 @@ struct CarrierCardView: View {
                     .frame(width: 38, height: 38)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     VStack(alignment: .leading) {
-                        Text(segment.thread?.carrier?.title ?? "")
+                        Text(segment.thread?.carrier?.title ?? "информации нет")
                             .font(.system(size: 17, weight: .regular))
-                        if segment.has_transfers ?? false {
-                            Text("C пересадкой в: \(segment.transfers?.first?.title ?? "")")
-                                .font(.system(size: 12, weight: .regular))
-                                .foregroundStyle(.ypRedUniversal)
-                                .lineLimit(2)
-                        }
+                        Text("C пересадкой в: \(segment.transfers?.first?.title ?? "")")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundStyle(.ypRedUniversal)
+                            .lineLimit(2)
+                            .opacity( segment.has_transfers ?? false ? 1 : 0)
                     }
                     Spacer()
-                    Text(startDateString)
+                    Text(startDate)
                         .font(.system(size: 12, weight: .regular))
                 }
                 .foregroundStyle(.ypBlackUniversal)
                 
                 HStack {
-                    Text(beginTime)
+                    Text(departureTime)
                     separator
                     Text("\(travelTime, specifier: "%.0f") часов")
                         .font(.system(size: 12, weight: .regular))
                     separator
-                    Text(endTime)
+                    Text(arrivalTime)
                 }
                 .foregroundStyle(.ypBlackUniversal)
             }
-            .padding([.leading, .trailing], 16)
-            .padding([.top, .bottom], 14)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
         }
         .clipShape(RoundedRectangle(cornerRadius: 24))
     }
@@ -98,5 +87,6 @@ struct CarrierCardView: View {
 }
 
 #Preview {
-    CarrierCardView(segmentInfo: Segments())
+    CarrierCardView(segmentInfo: Segments(), startDate: "", departureTime: "", arrivalTime: "")
+        .environmentObject(ScheduleViewModel())
 }

@@ -12,7 +12,7 @@ struct FiltersView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack(alignment: .leading, spacing: 16) {
                 Text("Время отправления")
                     .font(.system(size: 24, weight: .bold))

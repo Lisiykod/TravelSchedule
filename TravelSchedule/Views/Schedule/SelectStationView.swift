@@ -29,7 +29,7 @@ struct SelectStationView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack {
                 SearchBar(searchText: $searchString)
                 if !searchResults.isEmpty {
@@ -44,7 +44,7 @@ struct SelectStationView: View {
                                     }
                             }
                         }
-                        .padding([.leading,. trailing], 16)
+                        .padding(.horizontal, 16)
                     }
                     .scrollIndicators(.hidden)
                     .navigationTitle("Выбор станции")

@@ -24,7 +24,7 @@ struct SelectDestinationView: View {
         ZStack(alignment: .leading) {
             Color.ypWhiteUniversal
             Text(text)
-                .padding([.top, .bottom], 14)
+                .padding(.vertical, 14)
                 .padding([.leading], 16)
                 .lineLimit(1)
                 .foregroundStyle(text != placeholder ? .ypBlackUniversal : .ypGrayUniversal)

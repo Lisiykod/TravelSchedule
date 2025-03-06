@@ -14,7 +14,7 @@ struct CircleButtonRowView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             HStack {
                 Text(hasTransfer ? "Да" : "Нет")
                 Spacer()

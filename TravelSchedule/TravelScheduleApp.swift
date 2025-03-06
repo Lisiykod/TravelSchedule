@@ -10,8 +10,8 @@ import SwiftUI
 @main
 struct TravelScheduleApp: App {
     
-    @State private var viewModel = ScheduleViewModel()
-    @AppStorage("appTheme") private var isDarkModeOn = false
+    @StateObject private var viewModel = ScheduleViewModel()
+    @AppStorage(Constants.appThemeKey) private var isDarkModeOn = false
     
     var body: some Scene {
         WindowGroup {

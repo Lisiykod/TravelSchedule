@@ -29,7 +29,7 @@ struct SelectCityView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack {
                 SearchBar(searchText: $searchString)
                 
@@ -53,7 +53,7 @@ struct SelectCityView: View {
                                     }
                             }
                         }
-                        .padding([.leading,. trailing], 16)
+                        .padding(.horizontal, 16)
                     }
                     .scrollIndicators(.hidden)
                 } else {

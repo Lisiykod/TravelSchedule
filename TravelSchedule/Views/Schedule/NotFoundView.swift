@@ -12,7 +12,7 @@ struct NotFoundView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             Text(text)
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(.ypBlack)

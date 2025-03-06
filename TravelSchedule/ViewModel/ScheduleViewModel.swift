@@ -13,8 +13,8 @@ final class ScheduleViewModel: ObservableObject {
     
     @Published var allSettlements: [Settlements] = []
     @Published var stations: [Stations] = []
-    @Published var fromSettlemet: Settlements?
-    @Published var toSettlemet: Settlements?
+    @Published var fromSettlement: Settlements?
+    @Published var toSettlement: Settlements?
     @Published var fromStation: Stations?
     @Published var toStation: Stations?
     @Published var carriersList: [Segments] = []
@@ -25,10 +25,12 @@ final class ScheduleViewModel: ObservableObject {
     @Published var departureTimeIntervals: [DepartureTimeInterval] = []
     @Published var hasTransfers: Bool = true
     
-    private let navigationService = NavigationService.shared
+    private let navigationService = Router.shared
+    private let dataProvider: DataProviderProtocol
     
     // MARK: - Initializer
     init() {
+        dataProvider = DataProvider()
         Task {
             await getAllSettlements()
         }
@@ -39,13 +41,13 @@ final class ScheduleViewModel: ObservableObject {
     func setSettlementsStations(on settlement: Settlements, direction: Direction) {
         let allStations = settlement.stations ?? []
         stations = allStations.filter { $0.station_type == "train_station" || $0.transport_type == "train" }
-        stations.sort {$0.title! < $1.title! }
+        stations.sort {$0.title ?? "" < $1.title ?? "" }
         
         switch direction {
         case .from:
-            fromSettlemet = settlement
+            fromSettlement = settlement
         case .to:
-            toSettlemet = settlement
+            toSettlement = settlement
         }
     }
     
@@ -59,7 +61,7 @@ final class ScheduleViewModel: ObservableObject {
     }
     
     func changeDirection() {
-        swap(&fromSettlemet, &toSettlemet)
+        swap(&fromSettlement, &toSettlement)
         swap(&fromStation, &toStation)
     }
     
@@ -69,19 +71,11 @@ final class ScheduleViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = dateFormatter.string(from: Date())
         
-        let client = createClient()
-        guard let client else { return }
-        
-        let service = SearchService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        
         guard let fromCode = fromStation?.codes?.yandex_code,
               let toCode = toStation?.codes?.yandex_code else { return }
         
         do {
-            let searchResult = try await service.getSearchResult(from: fromCode, to: toCode, on: date, transportType: "train", transfers: hasTransfers)
+            let searchResult = try await dataProvider.getSearchResult(fromCode: fromCode, toCode: toCode, on: date, transportType: "train", hasTransfers: hasTransfers)
             carriersList = searchResult.segments ?? []
             filteredCarriersList = carriersList
         } catch ErrorsType.internetConnectError {
@@ -89,7 +83,6 @@ final class ScheduleViewModel: ObservableObject {
         } catch ErrorsType.serverError {
             addPath(with: Route.serverErrorView)
         } catch {
-            addPath(with: Route.serverErrorView)
             print(String(describing: error))
         }
         
@@ -102,19 +95,19 @@ final class ScheduleViewModel: ObservableObject {
         if !departureTimeIntervals.isEmpty {
             filteredCarriers = filteredCarriers.filter { segment in
                 let time = departureTime(departure: segment.departure ?? "")
-                    switch time {
-                    case 6...12:
-                        return departureTimeIntervals.contains(.morning)
-                    case 12...18:
-                        return departureTimeIntervals.contains(.afternoon)
-                    case 18...23:
-                        return departureTimeIntervals.contains(.evening)
-                    case 0...6:
-                        return departureTimeIntervals.contains(.night)
-                    default:
-                        return false
-                    }
+                switch time {
+                case 6...12:
+                    return departureTimeIntervals.contains(.morning)
+                case 12...18:
+                    return departureTimeIntervals.contains(.afternoon)
+                case 18...23:
+                    return departureTimeIntervals.contains(.evening)
+                case 0...6:
+                    return departureTimeIntervals.contains(.night)
+                default:
+                    return false
                 }
+            }
         }
         
         if !hasTransfers {
@@ -124,8 +117,19 @@ final class ScheduleViewModel: ObservableObject {
         filteredCarriersList = filteredCarriers
     }
     
+    func dateFormatter(date: String, with format: String, local: String) -> String {
+        let generalFormatter = DateFormatter()
+        generalFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: local)
+        formatter.dateFormat = format
+        
+        return formatter.string(from: generalFormatter.date(from: date) ?? Date())
+    }
+    
     func setSearchButtonEnable() -> Bool {
-        return fromStation != nil && toStation != nil 
+        fromStation != nil && toStation != nil
     }
     
     func addPath(with route: Route) {
@@ -147,28 +151,23 @@ final class ScheduleViewModel: ObservableObject {
         var stationList: [Settlements] = []
         let testSettlements = ["Москва", "Санкт-Петербург", "Сочи", "Горный Воздух", "Краснодар", "Казань", "Омск"]
         do {
-            let allStationsList = try await getStationsList()
-            for country in allStationsList.countries ?? [] {
-                for region in country.regions ?? [] {
-                    for city in region.settlements ?? [] {
-                        if testSettlements.contains(city.title ?? "") {
-                            stationList.append(city)
-                        }
-                    }
-                }
-            }
+            let allStationsList = try await dataProvider.getStationsList()
+            stationList = allStationsList.countries?
+                .flatMap { $0.regions ?? [] }
+                .flatMap { $0.settlements ?? [] }
+                .filter { testSettlements.contains($0.title ?? "") } ?? []
+            
         } catch ErrorsType.internetConnectError {
             addPath(with: Route.noInternetView)
         } catch ErrorsType.serverError {
             addPath(with: Route.serverErrorView)
         } catch {
-            addPath(with: Route.serverErrorView)
             print(String(describing: error))
         }
         
         allSettlements = stationList.filter { $0.title != ""}
-        isLoading = allSettlements.isEmpty ? true : false
-        allSettlements.sort {$0.title! < $1.title! }
+        isLoading = allSettlements.isEmpty
+        allSettlements.sort {$0.title ?? "" < $1.title ?? "" }
     }
     
     private func departureTime(departure: String) -> Int {
@@ -179,36 +178,4 @@ final class ScheduleViewModel: ObservableObject {
         return hour
     }
     
-    private func getStationsList() async throws -> StationsList {
-        let client = createClient()
-        guard let client else { return StationsList() }
-        
-        let service = StationsListService(
-            client: client,
-            apiKey: Constants.apiKey
-        )
-        let stationsList = try await service.getStationsList()
-        return stationsList
-    }
-    
-    private func createClient() -> Client? {
-        var url: URL?
-        
-        do {
-            url = try Servers.Server1.url()
-        } catch {
-            print(String(describing: error))
-        }
-        
-        guard let url else {
-            return nil
-        }
-        
-        let client = Client(
-            serverURL: url,
-            transport: URLSessionTransport()
-        )
-        
-        return client
-    }
 }

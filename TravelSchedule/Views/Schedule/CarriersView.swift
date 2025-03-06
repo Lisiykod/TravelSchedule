@@ -13,12 +13,12 @@ struct CarriersView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             VStack(spacing: 16) {
                 Group {
-                    Text("\(viewModel.fromSettlemet?.title ?? "")" + " (\(viewModel.fromStation?.title ?? "")) ") +
+                    Text("\(viewModel.fromSettlement?.title ?? "")" + " (\(viewModel.fromStation?.title ?? "")) ") +
                     Text(" -> ") +
-                    Text("\(viewModel.toSettlemet?.title ?? "")" + " (\(viewModel.toStation?.title ?? "")) ")
+                    Text("\(viewModel.toSettlement?.title ?? "")" + " (\(viewModel.toStation?.title ?? "")) ")
                 }
                 .font(.system(size: 24, weight: .bold))
                 
@@ -30,7 +30,12 @@ struct CarriersView: View {
                         ScrollView {
                             LazyVStack(spacing: 8) {
                                 ForEach(viewModel.filteredCarriersList, id: \.self) { segment in
-                                    CarrierCardView(segmentInfo: segment)
+                                    CarrierCardView(
+                                        segmentInfo: segment,
+                                        startDate: viewModel.dateFormatter(date: segment.start_date ?? "", with: "dd MMMM", local: "Ru_ru"),
+                                        departureTime: viewModel.dateFormatter(date: segment.departure ?? "", with: "HH:mm", local: "Ru_ru"),
+                                        arrivalTime: viewModel.dateFormatter(date: segment.arrival ?? "", with: "HH:mm", local: "Ru_ru")
+                                    )
                                         .frame(height: 104)
                                         .onTapGesture {
                                             viewModel.carrier = segment.thread?.carrier
@@ -75,8 +80,7 @@ struct CarriersView: View {
             }
             .foregroundStyle(.ypBlack)
             .padding(16)
-            
-        } //ZStack
+        }
     }
 }
 

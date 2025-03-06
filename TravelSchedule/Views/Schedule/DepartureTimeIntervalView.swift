@@ -15,7 +15,7 @@ struct DepartureTimeIntervalView: View {
     
     var body: some View {
         ZStack {
-            Color.ypWhite.ignoresSafeArea(.all)
+            Color.ypWhite.ignoresSafeArea()
             HStack {
                 Text(selectedTimeInterval.rawValue)
                 Spacer()
@@ -24,7 +24,6 @@ struct DepartureTimeIntervalView: View {
                     .onTapGesture {
                         if !departureTimeInterval.contains(selectedTimeInterval) {
                             departureTimeInterval.append(selectedTimeInterval)
-                            print("departureTimeInterval \(departureTimeInterval)")
                             selectCheckBox = true
                         } else {
                             departureTimeInterval = departureTimeInterval.filter { $0 != selectedTimeInterval}
