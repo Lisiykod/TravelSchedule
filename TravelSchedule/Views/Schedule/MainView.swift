@@ -11,6 +11,14 @@ struct MainView: View {
     
     @ObservedObject var navigationService = Router.shared
     
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .ypWhite
+        appearance.shadowColor = .tabBarDivider
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
     var body: some View {
         
         NavigationStack(path: $navigationService.path) {
@@ -56,7 +64,6 @@ struct MainView: View {
             }
         }
         .tint(.ypBlack)
-    
     }
     
 }
