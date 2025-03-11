@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     
-    @ObservedObject var navigationService = Router.shared
+    @EnvironmentObject private var navigationService: Router
     
     init() {
         let appearance = UITabBarAppearance()

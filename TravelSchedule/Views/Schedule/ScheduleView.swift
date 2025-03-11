@@ -10,6 +10,7 @@ import SwiftUI
 struct ScheduleView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
+    @EnvironmentObject private var navigationService: Router
     
     var body: some View {
         ZStack {
@@ -25,7 +26,7 @@ struct ScheduleView: View {
                                 placeholder: "Откуда"
                             )
                             .onTapGesture {
-                                viewModel.addPath(with: Route.selectFromCityView)
+                                navigationService.push(route: Route.selectFromCityView)
                             }
                             SelectDestinationView(
                                 settlement: viewModel.toSettlement?.title ?? "",
@@ -33,7 +34,7 @@ struct ScheduleView: View {
                                 placeholder: "Куда"
                             )
                             .onTapGesture {
-                                viewModel.addPath(with: Route.selectToCityView)
+                                navigationService.push(route: Route.selectToCityView)
                             }
                         }
                         .frame(height: 96)
@@ -64,7 +65,7 @@ struct ScheduleView: View {
                     Task {
                         await viewModel.search()
                     }
-                    viewModel.addPath(with: Route.carriersView)
+                    navigationService.push(route: Route.carriersView)
                 } label: {
                     Text("Найти")
                         .font(.system(size: 17, weight: .bold))

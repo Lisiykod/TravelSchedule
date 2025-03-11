@@ -25,7 +25,6 @@ final class ScheduleViewModel: ObservableObject {
     @Published var departureTimeIntervals: [DepartureTimeInterval] = []
     @Published var hasTransfers: Bool = true
     
-    private let navigationService = Router.shared
     private let dataProvider: DataProviderProtocol
     
     // MARK: - Initializer
@@ -79,9 +78,9 @@ final class ScheduleViewModel: ObservableObject {
             carriersList = searchResult.segments ?? []
             filteredCarriersList = carriersList
         } catch ErrorsType.internetConnectError {
-            addPath(with: Route.noInternetView)
+            print("internet connect error")
         } catch ErrorsType.serverError {
-            addPath(with: Route.serverErrorView)
+            print("server error")
         } catch {
             print(String(describing: error))
         }
@@ -132,18 +131,6 @@ final class ScheduleViewModel: ObservableObject {
         fromStation != nil && toStation != nil
     }
     
-    func addPath(with route: Route) {
-        navigationService.push(route: route)
-    }
-    
-    func backToRoot() {
-        navigationService.popRoot()
-    }
-    
-    func popLast() {
-        navigationService.popLast()
-    }
-    
     // MARK: - Private Methods
     
     @MainActor
@@ -158,9 +145,9 @@ final class ScheduleViewModel: ObservableObject {
                 .filter { testSettlements.contains($0.title ?? "") } ?? []
             
         } catch ErrorsType.internetConnectError {
-            addPath(with: Route.noInternetView)
+            print("internet connection error")
         } catch ErrorsType.serverError {
-            addPath(with: Route.serverErrorView)
+            print("server error")
         } catch {
             print(String(describing: error))
         }
