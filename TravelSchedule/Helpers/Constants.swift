@@ -9,4 +9,5 @@ import Foundation
 
 enum Constants {
     static let apiKey = "9219a763-f04b-4d4a-9a66-7d8bc632b276"
+    static let appThemeKey = "appTheme"
 }
