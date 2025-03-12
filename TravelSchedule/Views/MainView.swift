@@ -71,4 +71,5 @@ struct MainView: View {
 #Preview {
     MainView()
         .environmentObject(ScheduleViewModel())
+        .environmentObject(Router())
 }

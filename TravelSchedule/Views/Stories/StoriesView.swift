@@ -20,7 +20,7 @@ struct StoriesView: View {
                         ForEach(images, id: \.self) { index in
                             Image(index)
                                 .resizable()
-                                .aspectRatio(2/3, contentMode: .fill)
+                                .aspectRatio(2/3, contentMode: .fit)
                                 .frame(width: 92, height: 140)
                                 .border(Color.blue, width: 4)
                                 .cornerRadius(8)
