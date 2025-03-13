@@ -5,24 +5,34 @@
 //  Created by Olga Trofimova on 12.03.2025.
 //
 
-import SwiftUI
+import Foundation
 
-struct Story: Identifiable {
+struct Story: Identifiable, Hashable {
     let id: UUID
     let title: String
     let description: String
-    let image: Image
+//    let image: Image
+    let image: String
     var isViewed: Bool
     
+//    static let storiesData: [Story] = [
+//        Story(image: Image("storiesImage1")),
+//        Story(image: Image("storiesImage2")),
+//        Story(image: Image("storiesImage3")),
+//        Story(image: Image("storiesImage4")),
+//        Story(image: Image("storiesImage5"))
+//    ]
+    
     static let storiesData: [Story] = [
-        Story(image: Image("storiesImage1")),
-        Story(image: Image("storiesImage2")),
-        Story(image: Image("storiesImage3")),
-        Story(image: Image("storiesImage4")),
-        Story(image: Image("storiesImage5"))
+        Story(image: "storiesImage1"),
+        Story(image: "storiesImage2"),
+        Story(image: "storiesImage3"),
+        Story(image: "storiesImage4"),
+        Story(image: "storiesImage5")
     ]
     
-    init(image: Image,
+//    init(image: Image,
+    init(image: String,
          title: String = "Text Text Text Text Text Text Text Text Text Text Text Text",
          description: String = "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
          isViewed: Bool = false

@@ -13,10 +13,13 @@ struct CloseButton: View {
     
     var body: some View {
         Button(action: action) {
-            Image(systemName: "xmark.circle.fill")
-                .imageScale(.large)
-                .frame(width: 30, height: 30)
-                .foregroundStyle(.ypBlackUniversal)
+            ZStack {
+                Circle().foregroundStyle(.ypWhiteUniversal)
+                Image(systemName: "xmark.circle.fill")
+                    .resizable()
+                    .foregroundStyle(.ypBlackUniversal)
+            }
+            .frame(width: 30, height: 30)
         }
     }
 }

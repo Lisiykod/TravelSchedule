@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct StoryView: View {
+   
     let story: Story
     
     var body: some View {
         ZStack {
             Color.ypBlackUniversal.ignoresSafeArea()
-            story.image
+            Image(story.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .ignoresSafeArea()
