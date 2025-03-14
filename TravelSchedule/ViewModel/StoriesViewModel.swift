@@ -14,12 +14,10 @@ class StoriesViewModel: ObservableObject {
     func showStory(at id: UUID) {
         if let index = stories.firstIndex(where: { $0.id == id }) {
             selectStoryIndex = index
-            setStoryAsViewed(at: index)
         }
     }
     
-    private func setStoryAsViewed(at index: Int) {
+    func setStoryAsViewed(at index: Int) {
         stories[index].isViewed = true
     }
-    
 }

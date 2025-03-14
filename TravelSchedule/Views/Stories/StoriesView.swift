@@ -39,10 +39,10 @@ struct StoriesView: View {
             .padding(.trailing, 12)
             .padding(.top, 50)
         }
-        .background()
         .onAppear {
             timer = Self.createTimer(configuration: timerConfiguration)
             cancellable = timer.connect()
+            storiesVM.setStoryAsViewed(at: currentStoryIndex)
         }
         .onDisappear {
             cancellable?.cancel()
@@ -50,19 +50,23 @@ struct StoriesView: View {
         .onReceive(timer) {_ in
             timerTick()
         }
-        .onTapGesture {
-            nextStory()
+        .onTapGesture { location in
+            let screenWidth = UIScreen.main.bounds.width
+            
+            if location.x < screenWidth / 2 {
+                previewStory()
+            } else {
+                nextStory()
+            }
             resetTimer()
         }
         .gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
             .onEnded { value in
-                print(value.translation)
                 switch(value.translation.width, value.translation.height) {
-                    case (...0, -30...30):  print("left swipe")
-                    case (0..., -30...30):  print("right swipe")
-                    case (-100...100, ...0):  print("up swipe")
-                    case (-100...100, 0...):  print("down swipe")
-                    default:  print("no clue")
+                case (...0, -30...30): nextStory()
+                case (0..., -30...30): previewStory()
+                case (-100...100, 0...): dismiss()
+                default: print("some other value or gesture")
                 }
             }
         )
@@ -75,7 +79,16 @@ struct StoriesView: View {
         } else {
             withAnimation {
                 progress = CGFloat(nextStoryIndex)/CGFloat(storiesVM.stories.count)
+                storiesVM.setStoryAsViewed(at: nextStoryIndex)
             }
+        }
+    }
+    
+    private func previewStory() {
+        let prevStoryIndex = max(currentStoryIndex - 1, 0)
+        withAnimation {
+            progress = CGFloat(prevStoryIndex)/CGFloat(storiesVM.stories.count)
+            storiesVM.setStoryAsViewed(at: prevStoryIndex)
         }
     }
     
@@ -85,9 +98,6 @@ struct StoriesView: View {
         cancellable = timer.connect()
     }
     
-    private static func createTimer(configuration: TimerConfiguration) -> Timer.TimerPublisher {
-        Timer.publish(every: configuration.timerInterval, on: .main, in: .common)
-    }
     
     private func timerTick() {
         var nextProgress = progress + timerConfiguration.progressPerTick
@@ -97,6 +107,10 @@ struct StoriesView: View {
         withAnimation {
             progress = nextProgress
         }
+    }
+    
+    private static func createTimer(configuration: TimerConfiguration) -> Timer.TimerPublisher {
+        Timer.publish(every: configuration.timerInterval, on: .main, in: .common)
     }
 }
 
