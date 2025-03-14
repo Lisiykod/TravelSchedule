@@ -16,11 +16,11 @@ struct TravelScheduleApp: App {
     
     var body: some Scene {
         WindowGroup {
-//            MainView()
-//                .environmentObject(viewModel)
-//                .environmentObject(navigationService)
-//                .preferredColorScheme(isDarkModeOn ? .dark : .light)
-            StoriesView()
+            MainView()
+                .environmentObject(viewModel)
+                .environmentObject(navigationService)
+                .preferredColorScheme(isDarkModeOn ? .dark : .light)
+//            StoriesView(storiesViewModel: StoriesViewModel())
         }
     }
 }

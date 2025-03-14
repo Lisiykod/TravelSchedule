@@ -17,7 +17,6 @@ struct StoryView: View {
             Image(story.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .ignoresSafeArea()
                 .clipShape(RoundedRectangle(cornerRadius: 40))
             
             ZStack {

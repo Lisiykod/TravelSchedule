@@ -11,11 +11,27 @@ struct ScheduleView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @EnvironmentObject private var navigationService: Router
+    @StateObject private var storiesVM = StoriesViewModel()
+    @State private var isShowingStories: Bool = false
     
     var body: some View {
         ZStack {
             Color.ypWhite.ignoresSafeArea()
             VStack(spacing: 16) {
+                ScrollView(.horizontal) {
+                    LazyHStack(spacing: 12) {
+                        ForEach(storiesVM.stories) { story in
+                            StoryPreview(story: story)
+                                .onTapGesture {
+                                    storiesVM.showStory(at: story.id)
+                                    isShowingStories = true
+                                }
+                        }
+                    }
+                }
+                .scrollIndicators(.hidden)
+                .frame(height: 188)
+                
                 ZStack {
                     Color.ypBlue
                     HStack(spacing: 16) {
@@ -57,7 +73,6 @@ struct ScheduleView: View {
                     .padding(16)
                 }
                 .cornerRadius(20)
-                .padding(.horizontal, 16)
                 .frame(height: 128)
                 
                 Button {
@@ -76,7 +91,12 @@ struct ScheduleView: View {
                 }
                 .opacity(viewModel.setSearchButtonEnable() ? 1 : 0 )
                 
+                Spacer()
             }
+            .padding(.horizontal, 16)
+        }
+        .fullScreenCover(isPresented: $isShowingStories) {
+            StoriesView(storiesViewModel: storiesVM)
         }
     }
 }
