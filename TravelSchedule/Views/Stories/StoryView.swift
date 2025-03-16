@@ -14,7 +14,7 @@ struct StoryView: View {
     var body: some View {
         ZStack {
             Color.ypBlackUniversal.ignoresSafeArea()
-            Image(story.image)
+            Image(story.imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 40))

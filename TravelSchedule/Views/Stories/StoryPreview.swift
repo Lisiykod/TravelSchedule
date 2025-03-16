@@ -13,7 +13,7 @@ struct StoryPreview: View {
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            Image(story.image)
+            Image(story.imageName)
                 .resizable()
                 .aspectRatio(2/3, contentMode: .fit)
             Text(story.title)

@@ -14,7 +14,7 @@ struct TimerConfiguration {
     
     init(storiesCount: Int, secondsPerStory: TimeInterval = 5, timerTickInternal: TimeInterval = 0.25) {
         self.storiesCount = storiesCount
-        self.timerInterval = secondsPerStory
+        self.timerInterval = timerTickInternal
         self.progressPerTick = 1.0 / CGFloat(storiesCount) / secondsPerStory * timerTickInternal
     }
     

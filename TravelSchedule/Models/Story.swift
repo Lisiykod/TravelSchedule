@@ -11,7 +11,7 @@ struct Story: Identifiable, Hashable{
     let id: UUID
     let title: String
     let description: String
-    let image: String
+    let imageName: String
     var isViewed: Bool
 
     static let storiesData: [Story] = [
@@ -30,7 +30,7 @@ struct Story: Identifiable, Hashable{
         self.id = UUID()
         self.title = title
         self.description = description
-        self.image = image
+        self.imageName = image
         self.isViewed = isViewed
     }
     

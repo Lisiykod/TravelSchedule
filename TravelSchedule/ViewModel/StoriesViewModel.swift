@@ -20,4 +20,10 @@ class StoriesViewModel: ObservableObject {
     func setStoryAsViewed(at index: Int) {
         stories[index].isViewed = true
     }
+    
+    func orderedStories()  {
+        let viewedStories = stories.filter{$0.isViewed == true}.sorted(by: {$0.imageName < $1.imageName})
+        let notViewedStories = stories.filter{$0.isViewed == false}.sorted(by: {$0.imageName < $1.imageName})
+        stories = notViewedStories + viewedStories
+    }
 }

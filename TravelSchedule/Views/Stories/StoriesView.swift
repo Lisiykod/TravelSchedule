@@ -23,7 +23,7 @@ struct StoriesView: View {
     
     init(storiesViewModel: StoriesViewModel) {
         storiesVM = storiesViewModel
-        self.timerConfiguration = TimerConfiguration(storiesCount: storiesViewModel.stories.count, secondsPerStory: 2.5)
+        self.timerConfiguration = TimerConfiguration(storiesCount: storiesViewModel.stories.count)
         self.timer = Self.createTimer(configuration: timerConfiguration)
         progress = timerConfiguration.progress(for: storiesViewModel.selectStoryIndex)
     }
@@ -34,7 +34,7 @@ struct StoriesView: View {
             ProgressBar(numberOfSections: storiesVM.stories.count, progress: progress)
                 .padding(.init(top: 28, leading: 12, bottom: 12, trailing: 12))
             CloseButton {
-                dismiss()
+                dismissAndOrderStories()
             }
             .padding(.trailing, 12)
             .padding(.top, 50)
@@ -65,7 +65,6 @@ struct StoriesView: View {
                 switch(value.translation.width, value.translation.height) {
                 case (...0, -30...30): nextStory()
                 case (0..., -30...30): previewStory()
-                case (-100...100, 0...): dismiss()
                 default: print("some other value or gesture")
                 }
             }
@@ -75,7 +74,7 @@ struct StoriesView: View {
     private func nextStory() {
         let nextStoryIndex = currentStoryIndex + 1
         if nextStoryIndex == storiesVM.stories.count {
-            dismiss()
+            dismissAndOrderStories()
         } else {
             withAnimation {
                 progress = CGFloat(nextStoryIndex)/CGFloat(storiesVM.stories.count)
@@ -111,6 +110,11 @@ struct StoriesView: View {
     
     private static func createTimer(configuration: TimerConfiguration) -> Timer.TimerPublisher {
         Timer.publish(every: configuration.timerInterval, on: .main, in: .common)
+    }
+    
+    private func dismissAndOrderStories() {
+        dismiss()
+        storiesVM.orderedStories()
     }
 }
 

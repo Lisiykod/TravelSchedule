@@ -28,7 +28,7 @@ struct ScheduleView: View {
                                 }
                         }
                     }
-                }
+                } 
                 .scrollIndicators(.hidden)
                 .frame(height: 188)
                 
