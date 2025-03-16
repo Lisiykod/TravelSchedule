@@ -23,7 +23,7 @@ struct StoriesView: View {
     
     init(storiesViewModel: StoriesViewModel) {
         storiesVM = storiesViewModel
-        self.timerConfiguration = TimerConfiguration(storiesCount: storiesViewModel.stories.count)
+        self.timerConfiguration = TimerConfiguration(storiesCount: storiesViewModel.stories.count, secondsPerStory: 10)
         self.timer = Self.createTimer(configuration: timerConfiguration)
         progress = timerConfiguration.progress(for: storiesViewModel.selectStoryIndex)
     }
@@ -65,6 +65,7 @@ struct StoriesView: View {
                 switch(value.translation.width, value.translation.height) {
                 case (...0, -30...30): nextStory()
                 case (0..., -30...30): previewStory()
+                case (-100...100, 0...): dismissAndOrderStories()
                 default: print("some other value or gesture")
                 }
             }
