@@ -12,15 +12,15 @@ struct TravelScheduleApp: App {
     
     @StateObject private var viewModel = ScheduleViewModel()
     @StateObject private var navigationService = Router()
-    @AppStorage(Constants.appThemeKey) private var isDarkModeOn = false
+    @StateObject private var settingsVM = SettingsViewModel()
     
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(viewModel)
                 .environmentObject(navigationService)
-                .preferredColorScheme(isDarkModeOn ? .dark : .light)
-//            StoriesView(storiesViewModel: StoriesViewModel())
+                .environmentObject(settingsVM)
+                .preferredColorScheme(settingsVM.isDarkModeOn ? .dark : .light)
         }
     }
 }

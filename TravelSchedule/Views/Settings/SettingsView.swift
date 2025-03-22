@@ -11,14 +11,14 @@ struct SettingsView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @EnvironmentObject private var navigationService: Router
-    @AppStorage(Constants.appThemeKey) private var isDarkModeOn = false
+    @EnvironmentObject private var settingsViewModel: SettingsViewModel
     
     var body: some View {
         ZStack {
             Color.ypWhite.ignoresSafeArea()
             
             VStack {
-                Toggle("Темная тема", isOn: $isDarkModeOn)
+                Toggle("Темная тема", isOn: $settingsViewModel.isDarkModeOn)
                     .toggleStyle(SwitchToggleStyle(tint: .ypBlue))
                     .frame(height: 60)
                 
@@ -52,4 +52,5 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
         .environmentObject(ScheduleViewModel())
+        .environmentObject(SettingsViewModel())
 }
