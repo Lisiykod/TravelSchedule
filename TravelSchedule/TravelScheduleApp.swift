@@ -11,13 +11,16 @@ import SwiftUI
 struct TravelScheduleApp: App {
     
     @StateObject private var viewModel = ScheduleViewModel()
+    @StateObject private var navigationService = Router()
     @AppStorage(Constants.appThemeKey) private var isDarkModeOn = false
     
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(viewModel)
+                .environmentObject(navigationService)
                 .preferredColorScheme(isDarkModeOn ? .dark : .light)
+//            StoriesView(storiesViewModel: StoriesViewModel())
         }
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct CarriersView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
+    @EnvironmentObject private var navigationService: Router
     
     var body: some View {
         ZStack {
@@ -39,7 +40,7 @@ struct CarriersView: View {
                                         .frame(height: 104)
                                         .onTapGesture {
                                             viewModel.carrier = segment.thread?.carrier
-                                            viewModel.addPath(with: Route.selectCarrierInfoView)
+                                            navigationService.push(route: Route.selectCarrierInfoView)
                                         }
                                 }
                             }
@@ -51,7 +52,7 @@ struct CarriersView: View {
                             
                             Button {
                                 viewModel.departureTimeIntervals.removeAll()
-                                viewModel.addPath(with: Route.filtersView)
+                                navigationService.push(route: Route.filtersView)
                             } label: {
                                 Label {
                                     HStack {

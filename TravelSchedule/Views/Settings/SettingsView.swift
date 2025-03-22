@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
+    @EnvironmentObject private var navigationService: Router
     @AppStorage(Constants.appThemeKey) private var isDarkModeOn = false
     
     var body: some View {
@@ -30,7 +31,7 @@ struct SettingsView: View {
                 .background(.ypWhite)
                 .frame(height: 60)
                 .onTapGesture {
-                    viewModel.addPath(with: Route.userAgreementView)
+                    navigationService.push(route: Route.userAgreementView)
                 }
                 
                 Spacer()

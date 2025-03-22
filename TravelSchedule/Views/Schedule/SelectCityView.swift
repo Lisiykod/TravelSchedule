@@ -10,6 +10,7 @@ import SwiftUI
 struct SelectCityView: View {
     
     @EnvironmentObject private var viewModel: ScheduleViewModel
+    @EnvironmentObject private var navigationService: Router
     @State private var searchString: String = ""
     private var direction: Direction
     
@@ -45,9 +46,9 @@ struct SelectCityView: View {
                                     .onTapGesture {
                                         switch direction {
                                         case .from:
-                                            viewModel.addPath(with: Route.selectFromStationView)
+                                            navigationService.push(route: Route.selectFromStationView)
                                         case .to:
-                                            viewModel.addPath(with: Route.selectToStationView)
+                                            navigationService.push(route: Route.selectToStationView)
                                         }
                                         viewModel.setSettlementsStations(on: settlement, direction: direction)
                                     }
