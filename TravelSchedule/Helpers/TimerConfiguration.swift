@@ -15,10 +15,10 @@ struct TimerConfiguration {
     init(storiesCount: Int, secondsPerStory: TimeInterval = 5, timerTickInternal: TimeInterval = 0.25) {
         self.storiesCount = storiesCount
         self.timerInterval = timerTickInternal
-        self.progressPerTick = 1.0 / CGFloat(storiesCount) / secondsPerStory * timerTickInternal
+        self.progressPerTick = 1.0 / CGFloat(storiesCount == 0 ? 1 : storiesCount) / secondsPerStory * timerTickInternal
     }
     
     func progress(for storyIndex: Int) -> CGFloat {
-        return min(CGFloat(storyIndex)/CGFloat(storiesCount), 1)
+        min(CGFloat(storyIndex)/CGFloat(storiesCount), 1)
     }
 }

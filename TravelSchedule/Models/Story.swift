@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Story: Identifiable, Hashable{
+struct Story: Identifiable, Hashable {
     let id: UUID
     let title: String
     let description: String

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class StoriesViewModel: ObservableObject {
+final class StoriesViewModel: ObservableObject {
     @Published var stories = Story.storiesData
     @Published var selectStoryIndex: Int = 0
     
@@ -18,7 +18,9 @@ class StoriesViewModel: ObservableObject {
     }
     
     func setStoryAsViewed(at index: Int) {
-        stories[index].isViewed = true
+        if stories.indices.contains(index) {
+            stories[index].isViewed = true
+        }
     }
     
     func orderedStories()  {
