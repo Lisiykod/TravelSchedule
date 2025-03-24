@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ScheduleView: View {
     
+    @ObservedObject var carriersVM: CarriersViewModel
+    
+    @StateObject private var storiesVM = StoriesViewModel()
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @EnvironmentObject private var navigationService: Router
-    @StateObject private var storiesVM = StoriesViewModel()
-    @ObservedObject var carriersVM: CarriersViewModel
     @State private var isShowingStories: Bool = false
     
     var body: some View {

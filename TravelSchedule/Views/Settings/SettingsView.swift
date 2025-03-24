@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @EnvironmentObject private var viewModel: ScheduleViewModel
     @EnvironmentObject private var navigationService: Router
     @EnvironmentObject private var settingsViewModel: SettingsViewModel
     
@@ -51,6 +50,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(ScheduleViewModel())
         .environmentObject(SettingsViewModel())
 }
