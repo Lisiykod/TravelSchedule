@@ -7,9 +7,15 @@
 
 import Foundation
 
+@MainActor
 final class StoriesViewModel: ObservableObject {
     @Published var stories = Story.storiesData
     @Published var selectStoryIndex: Int = 0
+    @Published var timerConfiguration: TimerConfiguration
+    
+    init() {
+        self.timerConfiguration = TimerConfiguration(storiesCount: Story.storiesData.count, secondsPerStory: 10)
+    }
     
     func showStory(at id: UUID) {
         if let index = stories.firstIndex(where: { $0.id == id }) {
@@ -27,5 +33,9 @@ final class StoriesViewModel: ObservableObject {
         let viewedStories = stories.filter{$0.isViewed == true}.sorted(by: {$0.imageName < $1.imageName})
         let notViewedStories = stories.filter{$0.isViewed == false}.sorted(by: {$0.imageName < $1.imageName})
         stories = notViewedStories + viewedStories
+    }
+    
+    func createTimer() -> Timer.TimerPublisher {
+        Timer.publish(every: timerConfiguration.timerInterval, on: .main, in: .common)
     }
 }

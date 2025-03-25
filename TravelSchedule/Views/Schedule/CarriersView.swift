@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CarriersView: View {
     
+    @ObservedObject var carriersVM: CarriersViewModel
+    @ObservedObject var filtersVM: FiltersViewModel
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @EnvironmentObject private var navigationService: Router
     
@@ -26,20 +28,20 @@ struct CarriersView: View {
                 if viewModel.isLoading {
                     Spacer()
                     ProgressView()
-                } else if !viewModel.filteredCarriersList.isEmpty {
+                } else if !carriersVM.filteredCarriersList.isEmpty {
                     ZStack(alignment: .bottom) {
                         ScrollView {
                             LazyVStack(spacing: 8) {
-                                ForEach(viewModel.filteredCarriersList, id: \.self) { segment in
+                                ForEach(carriersVM.filteredCarriersList, id: \.self) { segment in
                                     CarrierCardView(
                                         segmentInfo: segment,
-                                        startDate: viewModel.dateFormatter(date: segment.start_date ?? "", with: "dd MMMM", local: "Ru_ru"),
-                                        departureTime: viewModel.dateFormatter(date: segment.departure ?? "", with: "HH:mm", local: "Ru_ru"),
-                                        arrivalTime: viewModel.dateFormatter(date: segment.arrival ?? "", with: "HH:mm", local: "Ru_ru")
+                                        startDate: carriersVM.dateFormatter(date: segment.start_date ?? "", with: "dd MMMM", locale: "Ru_ru"),
+                                        departureTime: carriersVM.dateFormatter(date: segment.departure ?? "", with: "HH:mm", locale: "Ru_ru"),
+                                        arrivalTime: carriersVM.dateFormatter(date: segment.arrival ?? "", with: "HH:mm", locale: "Ru_ru")
                                     )
                                         .frame(height: 104)
                                         .onTapGesture {
-                                            viewModel.carrier = segment.thread?.carrier
+                                            carriersVM.carrier = segment.thread?.carrier
                                             navigationService.push(route: Route.selectCarrierInfoView)
                                         }
                                 }
@@ -51,7 +53,7 @@ struct CarriersView: View {
                             Spacer()
                             
                             Button {
-                                viewModel.departureTimeIntervals.removeAll()
+                                filtersVM.departureTimeIntervals.removeAll()
                                 navigationService.push(route: Route.filtersView)
                             } label: {
                                 Label {
@@ -61,7 +63,7 @@ struct CarriersView: View {
                                             .foregroundStyle(.ypWhiteUniversal)
                                         Circle()
                                             .frame(width: 8, height: 8)
-                                            .foregroundStyle(viewModel.isFilter ? .ypRedUniversal : .ypBlue)
+                                            .foregroundStyle(filtersVM.isFilter ? .ypRedUniversal : .ypBlue)
                                     }
                                 } icon: {}
                                 
@@ -86,6 +88,6 @@ struct CarriersView: View {
 }
 
 #Preview {
-    CarriersView()
+    CarriersView(carriersVM: CarriersViewModel(), filtersVM: FiltersViewModel())
         .environmentObject(ScheduleViewModel())
 }

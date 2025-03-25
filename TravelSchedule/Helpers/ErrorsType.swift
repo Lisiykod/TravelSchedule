@@ -10,4 +10,5 @@ import Foundation
 enum ErrorsType: Error {
     case serverError
     case internetConnectError
+    case unknownError
 }

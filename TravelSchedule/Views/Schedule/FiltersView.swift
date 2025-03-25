@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct FiltersView: View {
+    
+    @ObservedObject var filtersViewModel: FiltersViewModel
+    @ObservedObject var carriersVM: CarriersViewModel
     @EnvironmentObject private var viewModel: ScheduleViewModel
     @EnvironmentObject private var navigationService: Router
     
@@ -19,10 +22,10 @@ struct FiltersView: View {
                     .font(.system(size: 24, weight: .bold))
                 
                 VStack(alignment: .leading, spacing: 0) {
-                    DepartureTimeIntervalView(departureTimeInterval: $viewModel.departureTimeIntervals, selectedTimeInterval: .morning)
-                    DepartureTimeIntervalView(departureTimeInterval: $viewModel.departureTimeIntervals, selectedTimeInterval: .afternoon)
-                    DepartureTimeIntervalView(departureTimeInterval: $viewModel.departureTimeIntervals, selectedTimeInterval: .evening)
-                    DepartureTimeIntervalView(departureTimeInterval: $viewModel.departureTimeIntervals, selectedTimeInterval: .night)
+                    DepartureTimeIntervalView(departureTimeInterval: $filtersViewModel.departureTimeIntervals, selectedTimeInterval: .morning)
+                    DepartureTimeIntervalView(departureTimeInterval: $filtersViewModel.departureTimeIntervals, selectedTimeInterval: .afternoon)
+                    DepartureTimeIntervalView(departureTimeInterval: $filtersViewModel.departureTimeIntervals, selectedTimeInterval: .evening)
+                    DepartureTimeIntervalView(departureTimeInterval: $filtersViewModel.departureTimeIntervals, selectedTimeInterval: .night)
                     
                 }
                 
@@ -30,16 +33,16 @@ struct FiltersView: View {
                     .font(.system(size: 24, weight: .bold))
                 
                 VStack(alignment: .leading, spacing: 0) {
-                    CircleButtonRowView(hasTransfer: true, selectTransfer: $viewModel.hasTransfers)
-                    CircleButtonRowView(hasTransfer: false, selectTransfer: $viewModel.hasTransfers)
+                    CircleButtonRowView(hasTransfer: true, selectTransfer: $filtersViewModel.hasTransfers)
+                    CircleButtonRowView(hasTransfer: false, selectTransfer: $filtersViewModel.hasTransfers)
                     
                 }
                 
                 Spacer()
                 
                 Button {
-                    viewModel.setFilters()
-                    viewModel.isFilter = !viewModel.departureTimeIntervals.isEmpty || !viewModel.hasTransfers ? true : false
+                    carriersVM.filteredCarriersList = filtersViewModel.setFilters(for: carriersVM.carriersList)
+                    filtersViewModel.isFilter = !filtersViewModel.departureTimeIntervals.isEmpty || !filtersViewModel.hasTransfers ? true : false
                     navigationService.popLast()
                 } label: {
                     Label {
@@ -65,6 +68,6 @@ struct FiltersView: View {
 }
 
 #Preview {
-    FiltersView()
+    FiltersView(filtersViewModel: FiltersViewModel(), carriersVM: CarriersViewModel())
         .environmentObject(ScheduleViewModel())
 }

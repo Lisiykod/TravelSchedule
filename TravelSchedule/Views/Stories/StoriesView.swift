@@ -19,13 +19,11 @@ struct StoriesView: View {
     
     private var currentStory: Story { storiesVM.stories[currentStoryIndex] }
     private var currentStoryIndex: Int { Int(progress * CGFloat(storiesVM.stories.count)) }
-    private var timerConfiguration: TimerConfiguration
     
     init(storiesViewModel: StoriesViewModel) {
         storiesVM = storiesViewModel
-        self.timerConfiguration = TimerConfiguration(storiesCount: storiesViewModel.stories.count, secondsPerStory: 10)
-        self.timer = Self.createTimer(configuration: timerConfiguration)
-        progress = timerConfiguration.progress(for: storiesViewModel.selectStoryIndex)
+        timer = storiesViewModel.createTimer()
+        progress = storiesViewModel.timerConfiguration.progress(for: storiesViewModel.selectStoryIndex)
     }
     
     var body: some View {
@@ -40,7 +38,7 @@ struct StoriesView: View {
             .padding(.top, 50)
         }
         .onAppear {
-            timer = Self.createTimer(configuration: timerConfiguration)
+            timer = storiesVM.createTimer()
             cancellable = timer.connect()
             storiesVM.setStoryAsViewed(at: currentStoryIndex)
         }
@@ -78,7 +76,7 @@ struct StoriesView: View {
             dismissAndOrderStories()
         } else {
             withAnimation {
-                progress = CGFloat(nextStoryIndex)/CGFloat(storiesVM.stories.count)
+                progress = storiesVM.timerConfiguration.progress(for: nextStoryIndex)
                 storiesVM.setStoryAsViewed(at: nextStoryIndex)
             }
         }
@@ -87,30 +85,26 @@ struct StoriesView: View {
     private func previewStory() {
         let prevStoryIndex = max(currentStoryIndex - 1, 0)
         withAnimation {
-            progress = CGFloat(prevStoryIndex)/CGFloat(storiesVM.stories.count)
+            progress = storiesVM.timerConfiguration.progress(for: prevStoryIndex)
             storiesVM.setStoryAsViewed(at: prevStoryIndex)
         }
     }
     
     private func resetTimer() {
         cancellable?.cancel()
-        timer = Self.createTimer(configuration: timerConfiguration)
+        timer = storiesVM.createTimer()
         cancellable = timer.connect()
     }
     
     
     private func timerTick() {
-        var nextProgress = progress + timerConfiguration.progressPerTick
+        var nextProgress = progress + storiesVM.timerConfiguration.progressPerTick
         if nextProgress >= 1 {
             nextProgress = 0
         }
         withAnimation {
             progress = nextProgress
         }
-    }
-    
-    private static func createTimer(configuration: TimerConfiguration) -> Timer.TimerPublisher {
-        Timer.publish(every: configuration.timerInterval, on: .main, in: .common)
     }
     
     private func dismissAndOrderStories() {
