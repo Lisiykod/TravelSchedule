@@ -62,6 +62,8 @@ struct MainView: View {
                         CarrierInfoView(carriersVM: carriersViewModel)
                     case .filtersView:
                         FiltersView(filtersViewModel: filtersViewModel, carriersVM: carriersViewModel)
+                    case .unknownErrorView:
+                        ErrorsView(error: .unknownError)
                     }
                 }
             }
@@ -76,6 +78,7 @@ struct MainView: View {
                 navigationService.push(route: Route.noInternetView)
             } catch {
                 print(String(describing: error))
+                navigationService.push(route: Route.unknownErrorView)
             }
         }
     }

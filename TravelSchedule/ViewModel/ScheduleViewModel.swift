@@ -65,7 +65,14 @@ final class ScheduleViewModel: ObservableObject {
         guard let fromCode = fromStation?.codes?.yandex_code,
               let toCode = toStation?.codes?.yandex_code else { return nil }
         
-        let searchResult = try await dataProvider.getSearchResult(fromCode: fromCode, toCode: toCode, on: date, transportType: "train", hasTransfers: hasTransfers)
+        let searchResult = try await dataProvider
+            .getSearchResult(
+                fromCode: fromCode,
+                toCode: toCode,
+                on: date,
+                transportType: "train",
+                hasTransfers: hasTransfers
+            )
      
         isLoading = false
         

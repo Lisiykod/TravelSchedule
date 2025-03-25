@@ -35,9 +35,9 @@ struct CarriersView: View {
                                 ForEach(carriersVM.filteredCarriersList, id: \.self) { segment in
                                     CarrierCardView(
                                         segmentInfo: segment,
-                                        startDate: carriersVM.dateFormatter(date: segment.start_date ?? "", with: "dd MMMM", local: "Ru_ru"),
-                                        departureTime: carriersVM.dateFormatter(date: segment.departure ?? "", with: "HH:mm", local: "Ru_ru"),
-                                        arrivalTime: carriersVM.dateFormatter(date: segment.arrival ?? "", with: "HH:mm", local: "Ru_ru")
+                                        startDate: carriersVM.dateFormatter(date: segment.start_date ?? "", with: "dd MMMM", locale: "Ru_ru"),
+                                        departureTime: carriersVM.dateFormatter(date: segment.departure ?? "", with: "HH:mm", locale: "Ru_ru"),
+                                        arrivalTime: carriersVM.dateFormatter(date: segment.arrival ?? "", with: "HH:mm", locale: "Ru_ru")
                                     )
                                         .frame(height: 104)
                                         .onTapGesture {

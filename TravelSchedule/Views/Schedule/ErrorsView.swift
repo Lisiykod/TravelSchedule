@@ -19,6 +19,9 @@ struct ErrorsView: View {
         case .serverError:
             self.imageName = "serverError"
             self.text = "Ошибка сервера"
+        case .unknownError:
+            self.imageName = "serverError"
+            self.text = "Неизвестная ошибка"
         }
     }
     

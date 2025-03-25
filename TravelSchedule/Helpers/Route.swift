@@ -18,4 +18,5 @@ enum Route: Hashable {
     case noInternetView
     case serverErrorView
     case filtersView
+    case unknownErrorView
 }

@@ -12,18 +12,18 @@ final class CarriersViewModel: ObservableObject {
     @Published var carriersList: [Segments] = []
     @Published var carrier: Carrier?
     @Published var filteredCarriersList: [Segments] = []
+    private let generalFormatter = DateFormatter()
+    private let formatter = DateFormatter()
     
     func carriers(from searchResult: SearchResult?) {
         carriersList = searchResult?.segments ?? []
         filteredCarriersList = carriersList
     }
     
-    func dateFormatter(date: String, with format: String, local: String) -> String {
-        let generalFormatter = DateFormatter()
+    func dateFormatter(date: String, with format: String, locale: String) -> String {
         generalFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: local)
+        formatter.locale = Locale(identifier: locale)
         formatter.dateFormat = format
         
         return formatter.string(from: generalFormatter.date(from: date) ?? Date())

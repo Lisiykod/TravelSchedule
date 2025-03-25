@@ -89,6 +89,7 @@ struct ScheduleView: View {
                             navigationService.push(route: Route.noInternetView)
                         } catch {
                             print(String(describing: error))
+                            navigationService.push(route: Route.unknownErrorView)
                         }
                     }
                     navigationService.push(route: Route.carriersView)
