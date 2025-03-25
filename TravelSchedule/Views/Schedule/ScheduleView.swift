@@ -30,7 +30,7 @@ struct ScheduleView: View {
                                 }
                         }
                     }
-                } 
+                }
                 .scrollIndicators(.hidden)
                 .frame(height: 188)
                 
@@ -80,12 +80,15 @@ struct ScheduleView: View {
                 Button {
                     viewModel.isLoading = true
                     Task {
-//                        await viewModel.search()
                         do {
                             let searchResult = try await viewModel.search()
                             carriersVM.carriers(from: searchResult)
+                        } catch ErrorsType.serverError {
+                            navigationService.push(route: Route.serverErrorView)
+                        } catch ErrorsType.internetConnectError {
+                            navigationService.push(route: Route.noInternetView)
                         } catch {
-                            
+                            print(String(describing: error))
                         }
                     }
                     navigationService.push(route: Route.carriersView)

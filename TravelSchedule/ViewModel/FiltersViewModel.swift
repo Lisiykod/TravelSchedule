@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 final class FiltersViewModel: ObservableObject {
     @Published var departureTimeIntervals: [DepartureTimeInterval] = []
     @Published var isFilter: Bool = false

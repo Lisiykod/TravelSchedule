@@ -9,6 +9,7 @@ import Foundation
 import OpenAPIURLSession
 import OpenAPIRuntime
 
+@MainActor
 final class ScheduleViewModel: ObservableObject {
     
     @Published var allSettlements: [Settlements] = []
@@ -25,9 +26,6 @@ final class ScheduleViewModel: ObservableObject {
     // MARK: - Initializer
     init() {
         dataProvider = DataProvider()
-        Task {
-            await getAllSettlements()
-        }
     }
     
     // MARK: - Public Methods
@@ -59,7 +57,6 @@ final class ScheduleViewModel: ObservableObject {
         swap(&fromStation, &toStation)
     }
     
-    @MainActor
     func search() async throws -> SearchResult? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -79,26 +76,14 @@ final class ScheduleViewModel: ObservableObject {
         fromStation != nil && toStation != nil
     }
     
-    // MARK: - Private Methods
-    
-    @MainActor
-    private func getAllSettlements() async {
+    func getAllSettlements() async throws {
         var stationList: [Settlements] = []
         let testSettlements = ["Москва", "Санкт-Петербург", "Сочи", "Горный Воздух", "Краснодар", "Казань", "Омск"]
-        do {
             let allStationsList = try await dataProvider.getStationsList()
             stationList = allStationsList.countries?
                 .flatMap { $0.regions ?? [] }
                 .flatMap { $0.settlements ?? [] }
                 .filter { testSettlements.contains($0.title ?? "") } ?? []
-            
-        } catch ErrorsType.internetConnectError {
-            print("internet connection error")
-        } catch ErrorsType.serverError {
-            print("server error")
-        } catch {
-            print(String(describing: error))
-        }
         
         allSettlements = stationList.filter { $0.title != ""}
         isLoading = allSettlements.isEmpty

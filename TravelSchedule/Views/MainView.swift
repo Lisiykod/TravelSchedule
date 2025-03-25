@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     
     @EnvironmentObject private var navigationService: Router
+    @EnvironmentObject private var viewModel: ScheduleViewModel
     @StateObject private var carriersViewModel = CarriersViewModel()
     @StateObject private var filtersViewModel = FiltersViewModel()
     
@@ -66,6 +67,17 @@ struct MainView: View {
             }
         }
         .tint(.ypBlack)
+        .task {
+            do {
+                try await viewModel.getAllSettlements()
+            } catch ErrorsType.serverError {
+                navigationService.push(route: Route.serverErrorView)
+            } catch ErrorsType.internetConnectError {
+                navigationService.push(route: Route.noInternetView)
+            } catch {
+                print(String(describing: error))
+            }
+        }
     }
     
 }
